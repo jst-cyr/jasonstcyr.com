@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@sanity/image-url": "^1.1.0",
+    "@tailwindcss/cli": "^4.0.14",
     "next": "15.2.2",
     "next-sanity": "^9.9.2",
     "react": "^19.0.0",
@@ -17,7 +18,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.0.14",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20",
     "@types/react": "^19",
