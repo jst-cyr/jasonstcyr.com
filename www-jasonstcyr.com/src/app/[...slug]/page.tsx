@@ -26,11 +26,12 @@ function isDatePath(segments: string[]) {
 
   // Validate date
   const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-  return (
+  const isValidDate =
     date.getFullYear() === parseInt(year) &&
     date.getMonth() === parseInt(month) - 1 &&
-    date.getDate() === parseInt(day)
-  );
+    date.getDate() === parseInt(day);
+
+  return isValidDate;
 }
 
 export default async function PostPage({
@@ -45,15 +46,17 @@ export default async function PostPage({
     notFound();
   }
 
-  const [year, month, day, slug] = resolvedParams.slug;
-
+  // Get the full slug path instead of just the last segment
+  const fullSlug = resolvedParams.slug.join('/');
+  console.log("SLUG: ", fullSlug);
   const post = await client.fetch<SanityDocument>(
     POST_QUERY,
-    { slug },
+    { slug: fullSlug },
     options
   );
 
   if (!post) {
+    console.log("NOT FOUND");
     notFound();
   }
 
