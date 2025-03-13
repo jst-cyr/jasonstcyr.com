@@ -29,7 +29,7 @@ export default async function PostPage({
 
   // Get the full slug path instead of just the last segment
   const fullSlug = resolvedParams.slug.join('/');
-  console.log("SLUG: ", fullSlug);
+  
   const post = await client.fetch<SanityDocument>(
     POST_QUERY,
     { slug: fullSlug },
@@ -37,7 +37,6 @@ export default async function PostPage({
   );
 
   if (!post) {
-    console.log("NOT FOUND");
     notFound();
   }
 
