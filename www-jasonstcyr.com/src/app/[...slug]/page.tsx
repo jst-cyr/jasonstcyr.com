@@ -79,7 +79,7 @@ export default async function PostPage({
         />
       )}
       <h1 className="text-4xl font-bold mb-8">{post.title}</h1>
-      <div className="prose">
+      <div className="prose prose-invert prose-lg max-w-none">
         <p>Published: {new Date(post.publishedAt).toLocaleDateString()}</p>
         {Array.isArray(post.body) && <PortableText value={post.body} />}
       </div>
