@@ -1,30 +1,8 @@
 import Link from "next/link";
 import { type SanityDocument } from "next-sanity";
 import Image from "next/image";
-
 import { client } from "@/sanity/client";
-
-const POSTS_QUERY = `*[
-  _type == "post"
-  && defined(slug.current)
-]|order(publishedAt desc)[0...12]{
-  _id, 
-  title, 
-  slug, 
-  publishedAt,
-  image {
-    asset->{
-      _id,
-      url,
-      metadata {
-        dimensions {
-          width,
-          height
-        }
-      }
-    }
-  }
-}`;
+import { POSTS_QUERY } from '../queries/posts';
 
 const options = { next: { revalidate: 30 } };
 
@@ -51,7 +29,9 @@ export default async function IndexPage() {
               </div>
               <div className="w-3/4">
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                <p className="text-gray-600">{new Date(post.publishedAt).toLocaleDateString()}</p>
+                <p className="text-gray-400">{new Date(post.publishedAt).toLocaleDateString()}</p>
+                <p className="text-gray-400">{post.summary.slice(0, 200)}...</p>
+                <p className="mt-2 text-sm"><a href={`/${post.slug.current}`}>Read more</a></p>
               </div>
             </Link>
           </div>
