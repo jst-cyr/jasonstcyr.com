@@ -53,7 +53,7 @@ export default async function PostPage({
         <img
           src={postImageUrl}
           alt={post.title}
-          className="aspect-video rounded-xl"
+          className="w-full h-auto object-cover rounded-xl"
         />
       )}
       <h1 className="text-4xl font-bold mb-8">{post.title}</h1>
