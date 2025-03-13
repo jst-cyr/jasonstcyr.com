@@ -4,6 +4,7 @@ import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { client } from "@/sanity/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { isDatePath } from "../../utils/dateUtils";
 
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
 
@@ -14,25 +15,6 @@ const urlFor = (source: SanityImageSource) =>
     : null;
 
 const options = { next: { revalidate: 30 } };
-
-function isDatePath(segments: string[]) {
-  if (segments.length !== 4) return false;
-  const [year, month, day] = segments;
-  
-  // Check if first three segments are numbers
-  if (!/^\d{4}$/.test(year) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
-    return false;
-  }
-
-  // Validate date
-  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-  const isValidDate =
-    date.getFullYear() === parseInt(year) &&
-    date.getMonth() === parseInt(month) - 1 &&
-    date.getDate() === parseInt(day);
-
-  return isValidDate;
-}
 
 export default async function PostPage({
   params,
