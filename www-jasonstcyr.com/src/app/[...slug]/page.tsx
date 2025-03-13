@@ -5,8 +5,7 @@ import { client } from "@/sanity/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isDatePath } from "../../utils/dateUtils";
-
-const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
+import { POST_QUERY } from '../../queries/posts'; // Correct
 
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
