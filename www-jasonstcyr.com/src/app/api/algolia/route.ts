@@ -2,6 +2,7 @@
 
 import { algoliasearch } from "algoliasearch";
 import { client } from "@/sanity/client";
+import { SanityDocument } from "next-sanity";
 
 const algoliaAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!;
 const algoliaApiKey = process.env.ALGOLIA_API_KEY!;
@@ -26,7 +27,7 @@ async function performInitialIndexing() {
     _updatedAt
   }`);
 
-  const records = sanityData.map((doc: any) => ({
+  const records = sanityData.map((doc: SanityDocument) => ({
     objectID: doc._id,
     title: doc.title,
     slug: doc.slug.current,
@@ -37,7 +38,7 @@ async function performInitialIndexing() {
      */
     body: doc.body?.slice(0, 9500),
     image: doc.image,
-    date: doc.date,
+    publishedAt: doc.publishedAt,
     _createdAt: doc._createdAt,
     _updatedAt: doc._updatedAt,
     tags: doc.tags,
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
       payload = await request.json();
       console.log("Parsed Payload:", JSON.stringify(payload));
     } catch (jsonError) {
-      console.warn("No JSON payload provided");
+      console.warn("No JSON payload provided." + jsonError);
       return Response.json({ error: "No payload provided" }, { status: 400 });
     }
 
@@ -111,10 +112,10 @@ export async function POST(request: Request) {
         message: `Successfully processed document with ID: ${_id}!`,
       });
     }
-  } catch (error: any) {
-    console.error("Error indexing objects:", error.message);
+  } catch (error) {
+    console.error("Error indexing objects:", error instanceof Error ? error.message : String(error));
     return Response.json(
-      { error: "Error indexing objects", details: error.message },
+      { error: "Error indexing objects", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
