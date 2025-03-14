@@ -50,6 +50,11 @@ export default async function PostPage({
       <Link href="/" className="hover:underline">
         ← Back to posts
       </Link>
+      <div className="text-center">
+        <h1 className="text-4xl font-bold">{post.title}</h1>
+        <p className="text-sm">Published: {new Date(post.publishedAt).toLocaleDateString()}</p>
+      </div>
+      <div className="flex flex-wrap gap-2">
       {postImageUrl && (
         <Image
           src={postImageUrl}
@@ -61,8 +66,7 @@ export default async function PostPage({
           className="rounded-xl" // Add any additional classes
         />
       )}
-      <h1 className="text-4xl font-bold text-center">{post.title}</h1>
-      <p className="text-center mb-8 text-sm">Published: {new Date(post.publishedAt).toLocaleDateString()}</p>
+      </div>
       <div className="prose prose-invert prose-lg max-w-none">
         {Array.isArray(post.body) && <PortableText value={post.body} />}
       </div>
