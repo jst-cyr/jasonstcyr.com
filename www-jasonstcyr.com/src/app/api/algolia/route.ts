@@ -19,7 +19,7 @@ async function performInitialIndexing() {
     _id,
     title,
     slug,
-    "body": pt::text(content),
+    "body": pt::text(content)[0..2000],
     _type,
     "coverImage": coverImage.asset->url,
     date,
