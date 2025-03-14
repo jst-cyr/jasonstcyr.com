@@ -29,7 +29,7 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
               {post.summary && (
                 <p className="text-gray-400">{post.summary.slice(0, 200)}...</p>
               )}
-              <p className="mt-2 text-sm"><a href={`/${post.slug.current}`}>Read more</a></p>
+              <p className="mt-2 text-sm">Read more</p>
             </div>
           </Link>
         </div>
