@@ -32,5 +32,23 @@ export const postType = defineType({
       name: 'image',
       type: 'image',
     }),
+    defineField({
+      name: 'tags',
+      type: 'array',
+      of: [{type: 'string'}],
+      title: 'Tags',
+      options: {
+        layout: 'tags'
+      }
+    }),
+    defineField({
+      name: 'categories',
+      type: 'array',
+      of: [{type: 'string'}],
+      title: 'Categories',
+      options: {
+        layout: 'tags'
+      }
+    }),
   ],
 })
