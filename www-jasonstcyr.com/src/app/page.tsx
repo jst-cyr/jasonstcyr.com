@@ -31,10 +31,7 @@ export default async function IndexPage() {
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
                 <p className="text-gray-400">{new Date(post.publishedAt).toLocaleDateString()}</p>
                 {post.summary && (
-                  <>
-                    <p className="text-gray-400">{post.summary.slice(0, 200)}...</p>
-                    
-                  </>
+                   <p className="text-gray-400">{post.summary.slice(0, 200)}...</p>
                 )}
                 <p className="mt-2 text-sm"><a href={`/${post.slug.current}`}>Read more</a></p>
               </div>
