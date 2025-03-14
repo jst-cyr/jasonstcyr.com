@@ -67,6 +67,22 @@ export default async function PostPage({
         />
       )}
       </div>
+      <div className="mb-8 text-center flex justify-center gap-4 text-sm">
+        <div className="flex gap-2">
+          {post.categories.map((category: string) => (
+            <span key={category} className="bg-gray-900 px-2 py-1 rounded-full">
+              {category}
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2 text-sm">
+          Tags: {post.tags.map((tag: string) => (
+            <span key={tag} className="bg-gray-900 px-2 py-1 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
       <div className="prose prose-invert prose-lg max-w-none">
         {Array.isArray(post.body) && <PortableText value={post.body} />}
       </div>
