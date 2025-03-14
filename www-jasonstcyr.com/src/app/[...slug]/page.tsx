@@ -76,7 +76,8 @@ export default async function PostPage({
           ))}
         </div>
         <div className="flex gap-2 text-sm">
-          Tags: {post.tags.map((tag: string) => (
+          <span className="px-2 py-1">Tags:</span> 
+          {post.tags.map((tag: string) => (
             <span key={tag} className="bg-gray-900 px-2 py-1 rounded-full">
               {tag}
             </span>
