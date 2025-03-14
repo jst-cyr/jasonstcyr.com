@@ -1,4 +1,5 @@
-import { SanityDocument } from "next-sanity";
+import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { PortableTextBlock, SanityDocument } from "next-sanity";
 
 export const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
 
@@ -28,7 +29,7 @@ export const POSTS_QUERY = `*[
 
 export type Post = SanityDocument & {
   title: string;
-  body: any; // Adjust according to your schema
+  body: PortableTextBlock[];
   publishedAt: string;
-  image: any; // Adjust according to your schema
+  image: SanityImageSource;
 }; 
