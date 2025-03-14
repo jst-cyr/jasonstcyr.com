@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isDatePath } from "../../utils/dateUtils";
 import { POST_QUERY } from '../../queries/posts'; // Correct
+import Image from "next/image"; // Import the Image component
 
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
@@ -50,10 +51,14 @@ export default async function PostPage({
         ← Back to posts
       </Link>
       {postImageUrl && (
-        <img
+        <Image
           src={postImageUrl}
           alt={post.title}
-          className="w-full h-auto object-cover rounded-xl"
+          layout="responsive" // Use responsive layout
+          width={600} // Set the width
+          height={400} // Set the height
+          objectFit="cover" // Ensure the image covers the area
+          className="rounded-xl" // Add any additional classes
         />
       )}
       <h1 className="text-4xl font-bold text-center">{post.title}</h1>
