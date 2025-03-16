@@ -4,6 +4,7 @@ import { SearchBox, Hits } from 'react-instantsearch';
 import { InstantSearchNext } from 'react-instantsearch-nextjs';
 import { useState } from 'react';
 import Link from 'next/link';
+import ArticleResult from './ArticleResult';
 
 const algoliaAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!;
 const algoliaApiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!;
@@ -44,12 +45,14 @@ export function Search() {
 
                     <Hits
                         hitComponent={({ hit }) => (
-                            <div className="p-2 border-b">
-                                <Link href={`/posts/${hit.slug}`} passHref className='text-red-500 hover:text-red-600 hover:underline'>
-                                    {hit.title}
-                                </Link>
-                                <p>{hit.body}</p>
-                            </div>
+                            <ArticleResult
+                                id={hit._id}
+                                slug={hit.slug}
+                                title={hit.title}
+                                summary={hit.body}
+                                publishedAt={hit.publishedAt}
+                                image={hit.image}
+                            />
                         )}
                     />
                 </div>
