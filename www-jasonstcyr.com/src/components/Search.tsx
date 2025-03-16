@@ -3,7 +3,6 @@ import { liteClient as algoliasearch } from 'algoliasearch/lite';
 import { SearchBox, Hits } from 'react-instantsearch';
 import { InstantSearchNext } from 'react-instantsearch-nextjs';
 import { useState } from 'react';
-import Link from 'next/link';
 import ArticleResult from './ArticleResult';
 
 const algoliaAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!;
