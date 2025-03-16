@@ -1,4 +1,4 @@
-+'use client';
+'use client';
 import { liteClient as algoliasearch } from 'algoliasearch/lite';
 import { SearchBox } from 'react-instantsearch';
 import { InstantSearchNext } from 'react-instantsearch-nextjs';
