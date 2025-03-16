@@ -39,7 +39,7 @@ export function Search() {
         />
         {/* Hits component to display results */}
         {results && (
-                <div className="text-left">
+                <div className="text-left mt-4">
                     <h2 className="text-2xl font-semibold">Results for: {results}</h2>
 
                     <Hits
