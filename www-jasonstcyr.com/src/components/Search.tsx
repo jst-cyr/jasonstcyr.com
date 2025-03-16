@@ -14,6 +14,9 @@ export function Search() {
     <InstantSearchNext 
         searchClient={searchClient} 
         indexName={indexName}
+        initialUiState={{
+            [indexName]: { query: '' },
+        }}
         routing={true}
         future={{
             preserveSharedStateOnUnmount: true,
