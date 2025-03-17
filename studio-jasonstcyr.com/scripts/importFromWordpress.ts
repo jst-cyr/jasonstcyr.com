@@ -112,9 +112,25 @@ async function fetchWordPressTags() {
 async function fetchWordPressCategories() {
   try {
     console.log('Fetching WordPress categories...');
-    const response = await axios.get(`${WORDPRESS_API_URL}/categories`);
-    console.log(`Found ${response.data.length} categories`);
-    return response.data;
+    let allCategories: any[] = [];
+    let page = 1;
+    let hasMore = true;
+    const perPage = 100; // Maximum allowed by WordPress API
+
+    while (hasMore) {
+      const response = await axios.get(`${WORDPRESS_API_URL}/categories?per_page=${perPage}&page=${page}`);
+      const categories = response.data;
+      
+      if (categories.length === 0) {
+        hasMore = false;
+      } else {
+        allCategories = [...allCategories, ...categories];
+        page++;
+      }
+    }
+
+    console.log(`Found ${allCategories.length} total categories`);
+    return allCategories;
   } catch (error) {
     console.error('Error fetching WordPress categories:', error);
     throw error;
