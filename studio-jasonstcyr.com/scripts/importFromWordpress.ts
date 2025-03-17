@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createClient } from 'next-sanity';
 import axios from 'axios';
 // import { postType } from '../schemaTypes/postType';  // Commenting out since we don't need it for testing
