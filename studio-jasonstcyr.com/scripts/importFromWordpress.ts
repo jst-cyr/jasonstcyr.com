@@ -150,6 +150,28 @@ function extractFullSlugFromLink(link: string): string {
   }
 }
 
+async function uploadImageToSanity(imageUrl: string): Promise<SanityImage | null> {
+  try {
+    // Download the image
+    const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(imageResponse.data);
+    
+    // Upload to Sanity
+    const asset = await sanityClient.assets.upload('image', imageBuffer);
+    
+    return {
+      _type: 'image',
+      asset: {
+        _type: 'reference',
+        _ref: asset._id,
+      },
+    };
+  } catch (error) {
+    console.error('Error uploading image to Sanity:', error);
+    return null;
+  }
+}
+
 async function importPosts() {
   try {
     // Fetch all necessary data
@@ -176,10 +198,14 @@ async function importPosts() {
       console.log(`\nProcessing post: ${post.title.rendered}`);
       console.log(`ID: ${post.id}`);
       
-      // Use jetpack_featured_media_url directly
-      let imageUrl = post.jetpack_featured_media_url || null;
-      if (imageUrl) {
-        console.log(`Featured image URL: ${imageUrl}`);
+      // Handle featured image
+      let image: SanityImage | undefined;
+      if (post.jetpack_featured_media_url) {
+        console.log(`Processing featured image: ${post.jetpack_featured_media_url}`);
+        const uploadedImage = await uploadImageToSanity(post.jetpack_featured_media_url);
+        if (uploadedImage) {
+          image = uploadedImage;
+        }
       }
 
       // Get post tags and categories
@@ -219,21 +245,11 @@ async function importPosts() {
         ],
         tags: postTags,
         categories: postCategories,
+        image, // Use the uploaded image reference
       };
 
-      // Add image if exists
-      if (imageUrl) {
-        sanityPost.image = {
-          _type: 'image',
-          asset: {
-            _type: 'reference',
-            _ref: imageUrl,
-          },
-        };
-      }
-
       // Create the document in Sanity
-      // await sanityClient.create(sanityPost);
+      await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
