@@ -50,5 +50,10 @@ export const postType = defineType({
         layout: 'tags'
       }
     }),
+    defineField({
+      name: 'wordpressId',
+      type: 'string',
+      title: 'WordPress ID',
+    }),
   ],
 })
