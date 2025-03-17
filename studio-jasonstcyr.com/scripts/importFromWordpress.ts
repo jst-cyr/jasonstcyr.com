@@ -172,6 +172,17 @@ async function uploadImageToSanity(imageUrl: string): Promise<SanityImage | null
   }
 }
 
+// Add a helper function to clean HTML entities
+function cleanHtmlEntities(text: string): string {
+  return text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'");
+}
+
 async function importPosts() {
   try {
     // Fetch all necessary data
@@ -198,6 +209,9 @@ async function importPosts() {
       console.log(`\nProcessing post: ${post.title.rendered}`);
       console.log(`ID: ${post.id}`);
       
+      // Clean the title before using it
+      const cleanTitle = cleanHtmlEntities(post.title.rendered);
+
       // Handle featured image
       let image: SanityImage | undefined;
       if (post.jetpack_featured_media_url) {
@@ -224,7 +238,7 @@ async function importPosts() {
       const sanityPost: SanityPost = {
         _type: 'post',
         wordpressId: post.id.toString(),
-        title: post.title.rendered,
+        title: cleanTitle,
         slug: {
           _type: 'slug',
           current: extractFullSlugFromLink(post.link),
