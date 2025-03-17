@@ -49,6 +49,7 @@ interface SanityImage {
 
 interface SanityPost {
   _type: 'post';
+  wordpressId: string;
   title: string;
   slug: {
     _type: 'slug';
@@ -159,28 +160,22 @@ async function importPosts() {
     ]);
 
     // Create a map of WordPress IDs to Sanity document IDs
-    // const existingPosts = await sanityClient.fetch(`*[_type == "post"]{ "wordpressId": _id }`);
-    // const existingIds = new Set(existingPosts.map((post: any) => post.wordpressId));
+    const existingPosts = await sanityClient.fetch(`*[_type == "post"]{ "wordpressId": _id }`);
+    const existingIds = new Set(existingPosts.map((post: any) => post.wordpressId));
 
     console.log('\nProcessing posts...');
     console.log('===================');
 
     // Process each post
     for (const post of posts) {
-      // if (existingIds.has(post.id.toString())) {
-      //   console.log(`Post ${post.id} already exists, skipping...`);
-      //   continue;
-      // }
-      //console.log(post);
-      //return;
+      if (existingIds.has(post.id.toString())) {
+       console.log(`Post ${post.id} already exists, skipping...`);
+       continue;
+      }
 
       console.log(`\nProcessing post: ${post.title.rendered}`);
       console.log(`ID: ${post.id}`);
-      console.log(`Slug: ${post.slug}`);
-      console.log(`Date: ${post.date}`);
-      console.log(`Tags: ${post.tags.length}`);
-      console.log(`Categories: ${post.categories.length}`);
-
+      
       // Use jetpack_featured_media_url directly
       let imageUrl = post.jetpack_featured_media_url || null;
       if (imageUrl) {
@@ -202,6 +197,7 @@ async function importPosts() {
       // Create the post in Sanity
       const sanityPost: SanityPost = {
         _type: 'post',
+        wordpressId: post.id.toString(),
         title: post.title.rendered,
         slug: {
           _type: 'slug',
@@ -247,6 +243,7 @@ async function importPosts() {
       console.log(sanityPost.tags);
       console.log(sanityPost.categories);
       console.log(sanityPost.image);
+      console.log(sanityPost.wordpressId);
       console.log('===================');
     }
 
