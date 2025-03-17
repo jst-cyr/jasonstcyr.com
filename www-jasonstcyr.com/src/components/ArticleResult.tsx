@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { type SanityDocument } from "next-sanity";
 
 interface ArticleResultProps {
   id: string;

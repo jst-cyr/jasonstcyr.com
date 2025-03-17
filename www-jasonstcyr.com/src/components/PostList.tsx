@@ -1,5 +1,3 @@
-import Link from "next/link";
-import Image from "next/image";
 import { type SanityDocument } from "next-sanity";
 import ArticleResult from "./ArticleResult";
 
