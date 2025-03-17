@@ -193,7 +193,7 @@ async function importPosts() {
     ]);
 
     // Create a map of WordPress IDs to Sanity document IDs
-    const existingPosts = await sanityClient.fetch(`*[_type == "post"]{ "wordpressId": _id }`);
+    const existingPosts = await sanityClient.fetch(`*[_type == "post"]{ "wordpressId": wordpressId }`);
     const existingIds = new Set(existingPosts.map((post: any) => post.wordpressId));
 
     console.log('\nProcessing posts...');
@@ -209,6 +209,7 @@ async function importPosts() {
       console.log(`\nProcessing post: ${post.title.rendered}`);
       console.log(`ID: ${post.id}`);
       
+    
       // Clean the title before using it
       const cleanTitle = cleanHtmlEntities(post.title.rendered);
 
