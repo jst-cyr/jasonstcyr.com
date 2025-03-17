@@ -224,11 +224,17 @@ async function importPosts() {
 
       // Get post tags and categories
       const postTags = post.tags
-        .map((tagId: number) => tags.find((t: any) => t.id === tagId)?.name)
+        .map((tagId: number) => {
+          const tag = tags.find((t: any) => t.id === tagId);
+          return tag ? cleanHtmlEntities(tag.name) : null;
+        })
         .filter(Boolean);
 
       const postCategories = post.categories
-        .map((catId: number) => categories.find((c: any) => c.id === catId)?.name)
+        .map((catId: number) => {
+          const category = categories.find((c: any) => c.id === catId);
+          return category ? cleanHtmlEntities(category.name) : null;
+        })
         .filter(Boolean);
 
       console.log('Tags:', postTags);
