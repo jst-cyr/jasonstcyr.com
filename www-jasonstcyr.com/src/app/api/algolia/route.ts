@@ -5,7 +5,7 @@ import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
 
 const algoliaAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!;
 const algoliaApiKey = process.env.ALGOLIA_API_KEY!;
-const indexName = process.env.ALGOLIA_INDEX_NAME!;
+const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME!;
 const webhookSecret = process.env.SANITY_WEBHOOK_SECRET!;
 
 const algoliaClient = algoliasearch(algoliaAppId, algoliaApiKey);
