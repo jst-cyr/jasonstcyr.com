@@ -84,9 +84,25 @@ async function fetchWordPressPosts() {
 async function fetchWordPressTags() {
   try {
     console.log('Fetching WordPress tags...');
-    const response = await axios.get(`${WORDPRESS_API_URL}/tags`);
-    console.log(`Found ${response.data.length} tags`);
-    return response.data;
+    let allTags: any[] = [];
+    let page = 1;
+    let hasMore = true;
+    const perPage = 100; // Maximum allowed by WordPress API
+
+    while (hasMore) {
+      const response = await axios.get(`${WORDPRESS_API_URL}/tags?per_page=${perPage}&page=${page}`);
+      const tags = response.data;
+      
+      if (tags.length === 0) {
+        hasMore = false;
+      } else {
+        allTags = [...allTags, ...tags];
+        page++;
+      }
+    }
+
+    console.log(`Found ${allTags.length} total tags`);
+    return allTags;
   } catch (error) {
     console.error('Error fetching WordPress tags:', error);
     throw error;
