@@ -50,7 +50,7 @@ export function Search() {
                                 title={hit.title}
                                 summary={hit.body}
                                 publishedAt={hit.publishedAt}
-                                image={hit.image}
+                                imageUrl={hit.image}
                             />
                         )}
                     />

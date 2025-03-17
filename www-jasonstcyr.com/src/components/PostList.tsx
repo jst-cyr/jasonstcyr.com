@@ -16,7 +16,7 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
           title={post.title}
           summary={post.summary}
           publishedAt={post.publishedAt}
-          image={post.image}
+          imageUrl={post.image.asset.url}
         />
       ))}
     </div>

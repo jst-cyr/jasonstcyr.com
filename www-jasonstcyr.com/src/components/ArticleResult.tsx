@@ -7,21 +7,18 @@ interface ArticleResultProps {
   title: string;
   summary: string;
   publishedAt: string;
-  image: {
-    asset: {
-      url: string;
-    };
-  };
-}
+  imageUrl: string;
+};
 
-const ArticleResult: React.FC<ArticleResultProps> = ({ id, slug, title, summary, publishedAt, image }) => {
+const ArticleResult: React.FC<ArticleResultProps> = ({ id, slug, title, summary, publishedAt, imageUrl }) => {
+  console.log(imageUrl);
   return (
         <div className="p-4 border rounded-lg shadow-md" key={id}>
           <Link href={`/${slug}`} className="flex gap-6">
             <div className="w-1/4 flex-shrink-0">
-              {image?.asset && (
+              {imageUrl && (
                 <Image
-                  src={image.asset.url}
+                  src={imageUrl}
                   alt={title}
                   width={200}
                   height={150}
