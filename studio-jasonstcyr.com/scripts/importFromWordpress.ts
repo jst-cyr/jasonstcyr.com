@@ -32,6 +32,36 @@ interface WordPressPost {
   featured_media: number;
 }
 
+interface SanityImage {
+  _type: 'image';
+  asset: {
+    _type: 'reference';
+    _ref: string;
+  };
+}
+
+interface SanityPost {
+  _type: 'post';
+  title: string;
+  slug: {
+    _type: 'slug';
+    current: string;
+  };
+  publishedAt: string;
+  body: {
+    _type: 'block';
+    children: {
+      _type: 'span';
+      text: string;
+    }[];
+    markDefs: never[];
+    style: 'normal';
+  }[];
+  tags: string[];
+  categories: string[];
+  image?: SanityImage;
+}
+
 async function fetchWordPressPosts() {
   try {
     const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=100`);
@@ -108,10 +138,9 @@ async function importPosts() {
         .filter(Boolean);
 
       // Create the post in Sanity
-      const sanityPost = {
+      const sanityPost: SanityPost = {
         _type: 'post',
         title: post.title.rendered,
-        image: null,
         slug: {
           _type: 'slug',
           current: post.slug,
