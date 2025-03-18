@@ -1,5 +1,6 @@
 import { liteClient as algoliasearch } from 'algoliasearch/lite';
 import PostList from "./PostList";
+import ArticleCarousel from './ArticleCarousel';
 import { SearchResponse } from '@algolia/client-search';
 import { PostData } from "@/types/post";
 
@@ -17,6 +18,7 @@ interface AlgoliaPost {
 interface TagPostListProps {
   tag: string;
   title?: string;
+  displayMode?: "list" | "carousel";
 }
 
 const algoliaAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!;
@@ -24,7 +26,7 @@ const algoliaApiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!;
 const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME!;
 const searchClient = algoliasearch(algoliaAppId, algoliaApiKey);
 
-export default async function TagPostList({ tag, title }: TagPostListProps) {
+export default async function TagPostList({ tag, title, displayMode = "list" }: TagPostListProps) {
   try {
     const searchResults = await searchClient.search<AlgoliaPost>([
       {
@@ -59,7 +61,11 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
     return (
       <div>
         {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
-        <PostList posts={posts} containerId={`tag_${tag}`} />
+        {displayMode === "carousel" ? (
+            <ArticleCarousel posts={posts} />
+        ) : (
+            <PostList posts={posts} containerId={`tag_${tag}`} />
+        )}
       </div>
     );
   } catch (error) {
