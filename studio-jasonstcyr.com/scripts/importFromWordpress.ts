@@ -1,7 +1,13 @@
 import 'dotenv/config';
 import { createClient } from 'next-sanity';
 import axios from 'axios';
-// import { postType } from '../schemaTypes/postType';  // Commenting out since we don't need it for testing
+import { htmlToBlocks } from '@portabletext/block-tools';
+import { PortableTextBlock } from '@portabletext/types';
+import { postType } from '../schemaTypes/postType';
+import { Block } from 'typescript';
+import { ArraySchemaType } from 'sanity';
+import { Schema } from '@sanity/schema';
+
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
 const dataset =  process.env.NEXT_PUBLIC_SANITY_DATASET!;
@@ -56,15 +62,7 @@ interface SanityPost {
     current: string;
   };
   publishedAt: string;
-  body: {
-    _type: 'block';
-    children: {
-      _type: 'span';
-      text: string;
-    }[];
-    markDefs: never[];
-    style: 'normal';
-  }[];
+  body: PortableTextBlock[];
   tags: string[];
   categories: string[];
   image?: SanityImage;
@@ -241,6 +239,14 @@ async function importPosts() {
       console.log('Tags:', postTags);
       console.log('Categories:', postCategories);
 
+      // Parse the body
+      const postSchema = Schema.compile(postType);
+      const blockContentType = postSchema.get('post').fields.find((field: any) => field.name === 'body')?.type as ArraySchemaType<Block>;
+      if (!blockContentType) {
+        throw new Error('Block content type not found');
+      }
+      const blocks = htmlToBlocks(post.content.rendered, blockContentType) as PortableTextBlock[];
+
       // Create the post in Sanity
       const sanityPost: SanityPost = {
         _type: 'post',
@@ -251,19 +257,7 @@ async function importPosts() {
           current: extractFullSlugFromLink(post.link),
         },
         publishedAt: post.date,
-        body: [
-          {
-            _type: 'block',
-            children: [
-              {
-                _type: 'span',
-                text: post.content.rendered,
-              },
-            ],
-            markDefs: [],
-            style: 'normal',
-          },
-        ],
+        body: blocks,
         tags: postTags,
         categories: postCategories,
         image, // Use the uploaded image reference

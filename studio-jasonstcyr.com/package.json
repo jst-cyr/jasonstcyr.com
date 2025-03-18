@@ -15,6 +15,7 @@
     "sanity"
   ],
   "dependencies": {
+    "@portabletext/block-tools": "^1.1.13",
     "@sanity/vision": "^3.79.0",
     "axios": "^1.8.3",
     "dotenv": "^16.4.7",
