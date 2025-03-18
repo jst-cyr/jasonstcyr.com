@@ -43,7 +43,7 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
     }
 
     const posts: PostData[] = algoliaHits.map(hit => ({
-      id: hit._id,
+      id: hit.objectID,
       slug: hit.slug,
       title: hit.title,
       summary: hit.body,
