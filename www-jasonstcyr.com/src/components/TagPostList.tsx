@@ -28,11 +28,13 @@ const searchClient = algoliasearch(algoliaAppId, algoliaApiKey);
 
 export default async function TagPostList({ tag, title, displayMode = "list" }: TagPostListProps) {
   try {
+    const escapedTag = encodeURIComponent(tag);
+
     const searchResults = await searchClient.search<AlgoliaPost>([
       {
         indexName,
         params: {
-          filters: `tags:${tag}`,
+          filters: `tags:${escapedTag}`,
           hitsPerPage: 100
         }
       }
