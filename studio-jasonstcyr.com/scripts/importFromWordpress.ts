@@ -181,6 +181,30 @@ function cleanHtmlEntities(text: string): string {
 }
 
 function parseBody(body: string): PortableTextBlock[] {
+  //Remove any related articles carousels before continuing
+  const tempDom = new JSDOM(body);
+  const document = tempDom.window.document;
+  
+  // Find and remove the carousel
+  const carousels = document.getElementsByClassName('wp-block-newspack-blocks-carousel');
+  for (const carousel of Array.from(carousels)) {
+    // Find the parent wp-block-group that contains this carousel
+    let parent = carousel.parentElement;
+    while (parent && !parent.classList.contains('wp-block-group')) {
+      parent = parent.parentElement;
+    }
+    // Remove the entire group if found, otherwise just remove the carousel
+    if (parent) {
+      parent.remove();
+    } else {
+      carousel.remove();
+    }
+  }
+
+  // Get the cleaned HTML
+  const cleanedBody = document.body.innerHTML;
+  console.log("BODY after carousel removal: ", cleanedBody);
+
   const postSchema = Schema.compile(
     {
       name: 'myBlogPost',
@@ -203,7 +227,7 @@ function parseBody(body: string): PortableTextBlock[] {
   }
 
   const domParser = { parseHtml: (html: string) => new JSDOM(html).window.document };
-  const blocks = htmlToBlocks(body, blockContentType, domParser ) as PortableTextBlock[];
+  const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser ) as PortableTextBlock[];
 
   return blocks;
 }
@@ -286,7 +310,8 @@ async function importPosts() {
       };
 
       // Create the document in Sanity
-      await sanityClient.create(sanityPost);
+      console.log("SKIPPING CREATION FOR NOW");
+      //await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
