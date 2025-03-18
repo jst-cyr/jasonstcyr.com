@@ -42,7 +42,7 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
         return (
             <div>
                 {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
-                <span>Unable to find any posts for tag "{tag}"</span>
+                <span>Unable to find any posts for tag &ldquo;{tag}&rdquo;</span>
             </div>
         );
     }
@@ -67,7 +67,7 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
     return (
         <div>
             {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
-            <span>Unable to retrieve posts for tag "{tag}"</span>
+            <span>Unable to retrieve posts for tag &ldquo;{tag}&rdquo;</span>
         </div>
     );
   }
