@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "@algolia/autocomplete-theme-classic": "^1.18.1",
-    "@chakra-ui/react": "^3.13.0",
-    "@emotion/react": "^11.14.0",
     "@sanity/image-url": "^1.1.0",
     "@sanity/webhook": "^4.0.4",
     "@tailwindcss/cli": "^4.0.14",
