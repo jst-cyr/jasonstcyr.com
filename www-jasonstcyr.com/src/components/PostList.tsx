@@ -3,14 +3,15 @@ import { PostData } from "@/types/post";
 
 interface PostListProps {
   posts: PostData[];
+  containerId: string;
 }
 
-const PostList: React.FC<PostListProps> = ({ posts }) => {
+const PostList: React.FC<PostListProps> = ({ posts, containerId }) => {
   return (
     <div className="grid grid-cols-1 gap-y-6">
       {posts.map((post) => (
         <ArticleResult 
-          key={post.id}
+          key={`${containerId}_${post.id}`}
           id={post.id}
           slug={post.slug}
           title={post.title}

@@ -54,7 +54,7 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
     return (
       <div>
         {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
-        <PostList posts={posts} />
+        <PostList posts={posts} containerId={`tag_${tag}`} />
       </div>
     );
   } catch (error) {
