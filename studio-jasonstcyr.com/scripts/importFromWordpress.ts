@@ -70,7 +70,7 @@ interface SanityPost {
 async function fetchWordPressPosts() {
   try {
     console.log('Fetching WordPress posts...');
-    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=1`);
+    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=5`);
     console.log(`Found ${response.data.length} posts`);
     return response.data;
   } catch (error) {
@@ -184,7 +184,8 @@ function parseBody(body: string): PortableTextBlock[] {
   //Remove any related articles carousels before continuing
   const tempDom = new JSDOM(body);
   const document = tempDom.window.document;
-  
+  //console.log("BODY before carousel removal: ", body);
+
   // Find and remove the carousel
   const carousels = document.getElementsByClassName('wp-block-newspack-blocks-carousel');
   for (const carousel of Array.from(carousels)) {
@@ -195,8 +196,10 @@ function parseBody(body: string): PortableTextBlock[] {
     }
     // Remove the entire group if found, otherwise just remove the carousel
     if (parent) {
+      console.log("Removing parent: ", parent);
       parent.remove();
     } else {
+      console.log("Removing carousel: ", carousel);
       carousel.remove();
     }
   }
@@ -261,17 +264,7 @@ async function importPosts() {
       // Clean the title before using it
       const cleanTitle = cleanHtmlEntities(post.title.rendered);
 
-      // Handle featured image
-      let image: SanityImage | undefined;
-      if (post.jetpack_featured_media_url) {
-        console.log(`Processing featured image: ${post.jetpack_featured_media_url}`);
-        const uploadedImage = await uploadImageToSanity(post.jetpack_featured_media_url);
-        if (uploadedImage) {
-          image = uploadedImage;
-        }
-      }
-
-      // Get post tags and categories
+     // Get post tags and categories
       const postTags = post.tags
         .map((tagId: number) => {
           const tag = tags.find((t: any) => t.id === tagId);
@@ -292,6 +285,16 @@ async function importPosts() {
       // Parse the body
       const blocks = parseBody(post.content.rendered);
 
+      // Handle featured image
+      let image: SanityImage | undefined;
+      if (post.jetpack_featured_media_url) {
+        console.log(`Processing featured image: ${post.jetpack_featured_media_url}`);
+        const uploadedImage = await uploadImageToSanity(post.jetpack_featured_media_url);
+        if (uploadedImage) {
+          image = uploadedImage;
+        }
+      }
+
       // Create the post in Sanity
       const sanityPost: SanityPost = {
         _type: 'post',
@@ -309,6 +312,7 @@ async function importPosts() {
       };
 
       // Create the document in Sanity
+      //console.log("SKIPPING CREATION FOR NOW");
       await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
