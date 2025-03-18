@@ -1,25 +1,71 @@
+"use client";
+
 import { PostData } from "@/types/post"; // Import the PostData type
+import { useRef } from "react";
 
 interface ArticleCarouselProps {
   posts: PostData[];
 }
 
 const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts }) => {
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scrollPrev = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.8;
+      carouselRef.current.scrollBy({
+        left: -scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollNext = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.8;
+      carouselRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
-    <div className="carousel rounded-box">
-      {posts.map((post) => (
-        <div key={post.id} className="carousel-item relative">
-          <img
-            src={post.imageUrl}
-            alt={post.title}
-            className="w-full h-48 object-cover rounded-md"
-          />
-          <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
-            <h2 className="text-white text-lg font-semibold">{post.title}</h2>
-            <p className="text-gray-300 text-sm">{new Date(post.publishedAt).toLocaleDateString()}</p>
+    <div className="relative">
+      <div className="carousel rounded-box" ref={carouselRef}>
+        {posts.map((post) => (
+          <div key={post.id} className="carousel-item relative">
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              className="w-full h-48 object-cover rounded-md"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
+              <h2 className="text-white text-lg font-semibold">{post.title}</h2>
+              <p className="text-gray-300 text-sm">{new Date(post.publishedAt).toLocaleDateString()}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+      
+      {/* Navigation buttons */}
+      <div className="absolute inset-y-0 left-0 flex items-center">
+        <button 
+          onClick={scrollPrev}
+          className="btn btn-circle btn-sm bg-base-200/70 border-none hover:bg-base-300 ml-2 z-10"
+        >
+          ❮
+        </button>
+      </div>
+      
+      <div className="absolute inset-y-0 right-0 flex items-center">
+        <button 
+          onClick={scrollNext}
+          className="btn btn-circle btn-sm bg-base-200/70 border-none hover:bg-base-300 mr-2 z-10"
+        >
+          ❯
+        </button>
+      </div>
     </div>
   );
 };
