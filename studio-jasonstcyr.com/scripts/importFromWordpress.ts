@@ -6,6 +6,7 @@ import { PortableTextBlock } from '@portabletext/types';
 import { Block } from 'typescript';
 import { ArraySchemaType } from 'sanity';
 import { Schema } from '@sanity/schema';
+import { JSDOM } from 'jsdom';
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
 const dataset =  process.env.NEXT_PUBLIC_SANITY_DATASET!;
@@ -200,7 +201,10 @@ function parseBody(body: string): PortableTextBlock[] {
   if (!blockContentType) {
     throw new Error('Block content type not found');
   }
-  const blocks = htmlToBlocks(body, blockContentType) as PortableTextBlock[];
+
+  const domParser = { parseHtml: (html: string) => new JSDOM(html).window.document };
+  const blocks = htmlToBlocks(body, blockContentType, domParser ) as PortableTextBlock[];
+
   return blocks;
 }
 
