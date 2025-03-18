@@ -1,13 +1,11 @@
 import 'dotenv/config';
 import { createClient } from 'next-sanity';
 import axios from 'axios';
-import { htmlToBlocks } from '@portabletext/block-tools';
+import { getBlockContentFeatures, htmlToBlocks } from '@portabletext/block-tools';
 import { PortableTextBlock } from '@portabletext/types';
-import { postType } from '../schemaTypes/postType';
 import { Block } from 'typescript';
 import { ArraySchemaType } from 'sanity';
 import { Schema } from '@sanity/schema';
-
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
 const dataset =  process.env.NEXT_PUBLIC_SANITY_DATASET!;
@@ -181,6 +179,31 @@ function cleanHtmlEntities(text: string): string {
     .replace(/&#039;/g, "'");
 }
 
+function parseBody(body: string): PortableTextBlock[] {
+  const postSchema = Schema.compile(
+    {
+      name: 'myBlogPost',
+      types: [{
+        type: 'object',
+        name: 'post',
+        fields: [
+          {
+            name: 'body',
+            type: 'array',
+            of: [{ type: 'block' }],
+          },
+        ],
+      }],
+    }
+  );
+  const blockContentType = postSchema.get('post').fields.find((field: any) => field.name === 'body')?.type as ArraySchemaType<Block>;
+  if (!blockContentType) {
+    throw new Error('Block content type not found');
+  }
+  const blocks = htmlToBlocks(body, blockContentType) as PortableTextBlock[];
+  return blocks;
+}
+
 async function importPosts() {
   try {
     // Fetch all necessary data
@@ -240,12 +263,7 @@ async function importPosts() {
       console.log('Categories:', postCategories);
 
       // Parse the body
-      const postSchema = Schema.compile(postType);
-      const blockContentType = postSchema.get('post').fields.find((field: any) => field.name === 'body')?.type as ArraySchemaType<Block>;
-      if (!blockContentType) {
-        throw new Error('Block content type not found');
-      }
-      const blocks = htmlToBlocks(post.content.rendered, blockContentType) as PortableTextBlock[];
+      const blocks = parseBody(post.content.rendered);
 
       // Create the post in Sanity
       const sanityPost: SanityPost = {
