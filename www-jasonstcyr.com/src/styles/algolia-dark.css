@@ -1,0 +1,25 @@
+/* Dark mode overrides for Algolia InstantSearch */
+.ais-SearchBox-input {
+  background-color: rgb(31, 41, 55) !important;
+  color: white !important;
+  border-color: rgb(75, 85, 99) !important;
+}
+
+.ais-SearchBox-input::placeholder {
+  color: rgb(156, 163, 175) !important;
+}
+
+.ais-Hits-item {
+  background-color: rgb(31, 41, 55) !important;
+  color: white !important;
+  border-color: rgb(75, 85, 99) !important;
+}
+
+.ais-Highlight-highlighted {
+  background-color: rgb(59, 130, 246) !important;
+  color: white !important;
+}
+
+.ais-Highlight-nonHighlighted {
+  color: rgb(156, 163, 175) !important;
+} 
