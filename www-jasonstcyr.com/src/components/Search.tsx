@@ -21,7 +21,8 @@ export function Search() {
                 [indexName]: { query: '' },
             }}
             onStateChange={({ uiState }) => {
-                setResults(uiState[indexName]?.query || '');
+                const query = uiState[indexName]?.query || '';
+                setResults(query.length >= 3 ? query : '');
             }}
             routing={true}
             future={{
@@ -38,7 +39,7 @@ export function Search() {
             }}
         />
         {/* Hits component to display results */}
-        {results && (
+        {results && results.length >= 3 && (
                 <div className="text-left mt-4">
                     <h2 className="text-2xl font-semibold">Results for: {results}</h2>
 
