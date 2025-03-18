@@ -2,17 +2,9 @@ import { type SanityDocument } from "next-sanity";
 import { client } from "@/sanity/client";
 import { POSTS_QUERY } from '../queries/posts';
 import PostList from "@/components/PostList";
+import { PostData } from "@/types/post";
 
 const options = { next: { revalidate: 30 } };
-
-interface PostData {
-  id: string;
-  slug: string;
-  title: string;
-  summary: string;
-  publishedAt: string;
-  imageUrl: string;
-}
 
 export default async function IndexPage() {
   const sanityPosts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);

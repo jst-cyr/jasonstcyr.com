@@ -1,13 +1,5 @@
 import ArticleResult from "./ArticleResult";
-
-interface PostData {
-  id: string;
-  slug: string;
-  title: string;
-  summary: string;
-  publishedAt: string;
-  imageUrl: string;
-}
+import { PostData } from "@/types/post";
 
 interface PostListProps {
   posts: PostData[];

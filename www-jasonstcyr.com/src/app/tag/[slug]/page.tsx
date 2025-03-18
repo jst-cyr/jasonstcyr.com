@@ -3,6 +3,7 @@ import { client } from "@/sanity/client";
 import { POSTS_BY_TAG_QUERY } from '../../../queries/posts';
 import PostList from "@/components/PostList";
 import { notFound } from "next/navigation";
+import { PostData } from "@/types/post";
 
 const options = { next: { revalidate: 30 } };
 
@@ -10,15 +11,6 @@ interface TagListingPageProps {
   params: Promise<{
     slug: string;
   }>;
-}
-
-interface PostData {
-  id: string;
-  slug: string;
-  title: string;
-  summary: string;
-  publishedAt: string;
-  imageUrl: string;
 }
 
 export default async function TagListingPage({ params }: TagListingPageProps) {
