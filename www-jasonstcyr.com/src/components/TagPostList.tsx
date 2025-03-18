@@ -39,7 +39,12 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
     const algoliaHits = (searchResults.results[0] as SearchResponse<AlgoliaPost>).hits;
 
     if (!algoliaHits || algoliaHits.length === 0) {
-      return null; // Or return a "no posts found" message if you prefer
+        return (
+            <div>
+                {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
+                <span>Unable to find any posts for tag "{tag}"</span>
+            </div>
+        );
     }
 
     const posts: PostData[] = algoliaHits.map(hit => ({
@@ -59,6 +64,11 @@ export default async function TagPostList({ tag, title }: TagPostListProps) {
     );
   } catch (error) {
     console.error(`Error fetching posts for tag "${tag}":`, error);
-    return null; // Or return an error message if you prefer
+    return (
+        <div>
+            {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
+            <span>Unable to retrieve posts for tag "{tag}"</span>
+        </div>
+    );
   }
 } 
