@@ -203,7 +203,6 @@ function parseBody(body: string): PortableTextBlock[] {
 
   // Get the cleaned HTML
   const cleanedBody = document.body.innerHTML;
-  console.log("BODY after carousel removal: ", cleanedBody);
 
   const postSchema = Schema.compile(
     {
@@ -310,8 +309,7 @@ async function importPosts() {
       };
 
       // Create the document in Sanity
-      console.log("SKIPPING CREATION FOR NOW");
-      //await sanityClient.create(sanityPost);
+      await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
