@@ -70,7 +70,7 @@ interface SanityPost {
 async function fetchWordPressPosts() {
   try {
     console.log('Fetching WordPress posts...');
-    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=5`);
+    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=10`);
     console.log(`Found ${response.data.length} posts`);
     return response.data;
   } catch (error) {
