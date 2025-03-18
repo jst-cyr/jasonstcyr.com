@@ -1,5 +1,4 @@
 import TagPostList from "@/components/TagPostList";
-import { notFound } from "next/navigation";
 
 interface TagListingPageProps {
   params: Promise<{
