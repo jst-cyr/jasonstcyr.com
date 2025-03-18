@@ -1,7 +1,5 @@
 import '../styles/globals.css';
 import '@algolia/autocomplete-theme-classic';
-import 'instantsearch.css/themes/satellite.css';
-import '../styles/algolia-dark.css';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
