@@ -62,7 +62,7 @@ export default async function TagPostList({ tag, title, displayMode = "list" }: 
       <div>
         {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
         {displayMode === "carousel" ? (
-            <ArticleCarousel posts={posts} />
+            <ArticleCarousel posts={posts} containerId={`tag_${tag}`} />
         ) : (
             <PostList posts={posts} containerId={`tag_${tag}`} />
         )}

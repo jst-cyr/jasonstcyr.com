@@ -5,9 +5,10 @@ import { useRef } from "react";
 
 interface ArticleCarouselProps {
   posts: PostData[];
+  containerId: string;
 }
 
-const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts }) => {
+const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts, containerId }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const scrollPrev = () => {
@@ -59,7 +60,7 @@ const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts }) => {
     <div className="relative">
       <div className="carousel rounded-box" ref={carouselRef}>
         {posts.map((post) => (
-          <div key={post.id} className="carousel-item relative">
+          <div key={`${containerId}_${post.id}`} className="carousel-item relative">
             <img
               src={post.imageUrl}
               alt={post.title}
