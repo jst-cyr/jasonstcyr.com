@@ -11,7 +11,6 @@ interface ArticleResultProps {
 };
 
 const ArticleResult: React.FC<ArticleResultProps> = ({ id, slug, title, summary, publishedAt, imageUrl }) => {
-  console.log(imageUrl);
   return (
         <div className="p-4 border rounded-lg shadow-md" key={id}>
           <Link href={`/${slug}`} className="flex gap-6">
