@@ -2,6 +2,7 @@
 
 import { PostData } from "@/types/post"; // Import the PostData type
 import { useRef } from "react";
+import Link from "next/link";
 
 interface ArticleCarouselProps {
   posts: PostData[];
@@ -60,7 +61,11 @@ const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts, containerId })
     <div className="relative">
       <div className="carousel rounded-box" ref={carouselRef}>
         {posts.map((post) => (
-          <div key={`${containerId}_${post.id}`} className="carousel-item relative">
+          <Link 
+            href={`${post.slug}`} 
+            key={`${containerId}_${post.id}`}
+            className="carousel-item relative block hover:opacity-90 transition-opacity"
+          >
             <img
               src={post.imageUrl}
               alt={post.title}
@@ -70,7 +75,7 @@ const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts, containerId })
               <h2 className="text-white text-lg font-semibold">{post.title}</h2>
               <p className="text-gray-300 text-sm">{new Date(post.publishedAt).toLocaleDateString()}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       
