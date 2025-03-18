@@ -1,8 +1,16 @@
-import { type SanityDocument } from "next-sanity";
 import ArticleResult from "./ArticleResult";
 
+interface PostData {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  publishedAt: string;
+  imageUrl: string;
+}
+
 interface PostListProps {
-  posts: SanityDocument[];
+  posts: PostData[];
 }
 
 const PostList: React.FC<PostListProps> = ({ posts }) => {
@@ -10,13 +18,13 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
     <div className="grid grid-cols-1 gap-y-6">
       {posts.map((post) => (
         <ArticleResult 
-          key={post._id}
-          id={post._id}
-          slug={post.slug.current}
+          key={post.id}
+          id={post.id}
+          slug={post.slug}
           title={post.title}
           summary={post.summary}
           publishedAt={post.publishedAt}
-          imageUrl={post.image.asset.url}
+          imageUrl={post.imageUrl}
         />
       ))}
     </div>

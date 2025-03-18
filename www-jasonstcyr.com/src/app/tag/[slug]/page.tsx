@@ -12,18 +12,36 @@ interface TagListingPageProps {
   }>;
 }
 
+interface PostData {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  publishedAt: string;
+  imageUrl: string;
+}
+
 export default async function TagListingPage({ params }: TagListingPageProps) {
   const resolvedParams = await params;
   const tag = decodeURIComponent(resolvedParams.slug);
-  const posts = await client.fetch<SanityDocument[]>(
+  const sanityPosts = await client.fetch<SanityDocument[]>(
     POSTS_BY_TAG_QUERY,
     { tag } as Record<string, string>,
     options
   );
 
-  if (!posts || posts.length === 0) {
+  if (!sanityPosts || sanityPosts.length === 0) {
     notFound();
   }
+
+  const posts: PostData[] = sanityPosts.map(post => ({
+    id: post._id,
+    slug: post.slug.current,
+    title: post.title,
+    summary: post.summary,
+    publishedAt: post.publishedAt,
+    imageUrl: post.image.asset.url
+  }));
 
   return (
     <main className="container mx-auto min-h-screen max-w-4xl p-8">

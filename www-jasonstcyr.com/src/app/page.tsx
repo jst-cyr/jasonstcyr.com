@@ -5,8 +5,26 @@ import PostList from "@/components/PostList";
 
 const options = { next: { revalidate: 30 } };
 
+interface PostData {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  publishedAt: string;
+  imageUrl: string;
+}
+
 export default async function IndexPage() {
-  const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
+  const sanityPosts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
+
+  const posts: PostData[] = sanityPosts.map(post => ({
+    id: post._id,
+    slug: post.slug.current,
+    title: post.title,
+    summary: post.summary,
+    publishedAt: post.publishedAt,
+    imageUrl: post.image.asset.url
+  }));
 
   return (
     <main className="container mx-auto min-h-screen max-w-4xl p-8">
