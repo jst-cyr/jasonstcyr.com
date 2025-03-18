@@ -12,21 +12,46 @@ const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts }) => {
 
   const scrollPrev = () => {
     if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.8;
-      carouselRef.current.scrollBy({
-        left: -scrollAmount,
-        behavior: "smooth",
-      });
+      // Get the scroll position before scrolling
+      const currentScroll = carouselRef.current.scrollLeft;
+      
+      // Standard scroll amount (full item width)
+      const itemWidth = carouselRef.current.querySelector('.carousel-item')?.clientWidth || 0;
+      
+      // If we're at the beginning, scroll to the end
+      if (currentScroll <= 10) {
+        carouselRef.current.scrollLeft = carouselRef.current.scrollWidth;
+      } else {
+        // Otherwise scroll one item width
+        carouselRef.current.scrollBy({
+          left: -itemWidth,
+          behavior: "smooth",
+        });
+      }
     }
   };
 
   const scrollNext = () => {
     if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.8;
-      carouselRef.current.scrollBy({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
+      // Get the total scrollable width
+      const scrollableWidth = carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
+      
+      // Get the current scroll position
+      const currentScroll = carouselRef.current.scrollLeft;
+      
+      // Standard scroll amount (full item width)
+      const itemWidth = carouselRef.current.querySelector('.carousel-item')?.clientWidth || 0;
+      
+      // If we're near the end, scroll back to the beginning
+      if (currentScroll >= scrollableWidth - 10) {
+        carouselRef.current.scrollLeft = 0;
+      } else {
+        // Otherwise scroll one item width
+        carouselRef.current.scrollBy({
+          left: itemWidth,
+          behavior: "smooth",
+        });
+      }
     }
   };
 
