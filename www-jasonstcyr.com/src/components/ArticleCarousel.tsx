@@ -73,7 +73,13 @@ const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts, containerId })
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
               <h2 className="text-white text-lg font-semibold">{post.title}</h2>
-              <p className="text-gray-300 text-sm">{new Date(post.publishedAt).toLocaleDateString()}</p>
+              <p className="text-gray-300 text-sm">{
+                new Date(post.publishedAt).toLocaleDateString("en-CA", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit"
+                })
+              }</p>
             </div>
           </Link>
         ))}
