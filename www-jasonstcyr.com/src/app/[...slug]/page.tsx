@@ -88,7 +88,7 @@ export default async function PostPage({
       </div>
       {post.seriesTag && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold">More From the "{post.seriesTag}" Series</h2>
+          <h2 className="text-2xl font-bold">More From the &ldquo;{post.seriesTag}&rdquo; Series</h2>
           <TagPostList tag={post.seriesTag} displayMode="carousel" />
         </div>
       )}
