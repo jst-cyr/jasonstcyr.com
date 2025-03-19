@@ -64,13 +64,14 @@ interface SanityPost {
   body: PortableTextBlock[];
   tags: string[];
   categories: string[];
+  seriesTag?: string;
   image?: SanityImage;
 }
 
 async function fetchWordPressPosts() {
   try {
     console.log('Fetching WordPress posts...');
-    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=11`);
+    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=15`);
     console.log(`Found ${response.data.length} posts`);
     return response.data;
   } catch (error) {
@@ -236,6 +237,24 @@ function parseBody(body: string): PortableTextBlock[] {
   return blocks;
 }
 
+// Extract the series tag from the post information
+function extractSeriesTag(post: SanityPost): string | null {
+  if (post.title.includes("Choose your Next.js host")) {
+    return "Choose Your Next.js Host";
+  }
+  else if (post.title.includes("Dark Invasion of Lani")) {
+    return "Dark Invasion of Lani";
+  }
+  else if (post.title.includes("Corruption of Lani")) {
+    return "Corruption of Lani";
+  }
+  else if (post.title.includes("Thora Silentblade")) {
+    return "Thora";
+  }
+  
+  return null;
+}
+
 async function importPosts() {
   try {
     // Fetch all necessary data
@@ -313,6 +332,11 @@ async function importPosts() {
         image, // Use the uploaded image reference
       };
 
+      const seriesTag = extractSeriesTag(sanityPost);
+      if (seriesTag) {
+        sanityPost.seriesTag = seriesTag;
+      }
+
       // Create the document in Sanity
       //console.log("SKIPPING CREATION FOR NOW");
       await sanityClient.create(sanityPost);
@@ -326,6 +350,7 @@ async function importPosts() {
       console.log(sanityPost.categories);
       console.log(sanityPost.image);
       console.log(sanityPost.wordpressId);
+      console.log(sanityPost.seriesTag);
       console.log('===================');
     }
 
