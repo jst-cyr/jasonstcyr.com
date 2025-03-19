@@ -15,6 +15,7 @@ interface AlgoliaPost {
 }
 
 interface RelatedArticlesProps {
+    postId: string; // The post ID for the current article
     currentSlug: string; // The slug of the current article
     title?: string; // Optional title for the related articles section
 }
@@ -22,42 +23,16 @@ interface RelatedArticlesProps {
 const algoliaAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!;
 const algoliaApiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!;
 const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME!;
-const searchClient = algoliasearch(algoliaAppId, algoliaApiKey);
 const recommendClient = algoliasearch(algoliaAppId, algoliaApiKey).initRecommend();
 
-export default async function RelatedArticles({ currentSlug, title }: RelatedArticlesProps) {
+export default async function RelatedArticles({ postId, title }: RelatedArticlesProps) {
     try {
-        // First, find the Algolia Object ID for the current article using the slug
-        const searchResults = await searchClient.search<AlgoliaPost>([
-            {
-                indexName,
-                params: {
-                    filters: `slug:"${currentSlug}"`, // Use double quotes for exact match
-                    hitsPerPage: 1,
-                },
-            },
-        ]);
-
-        const algoliaHit = (searchResults.results[0] as SearchResponse<AlgoliaPost>).hits[0];
-
-        if (!algoliaHit) {
-            console.error(`Error fetching related articles for slug "${currentSlug}". Cannot find current article in the index.`);
-            return (
-                <div>
-                    {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
-                    <span>Unable to retrieve related articles. Cannot find current article in the index.</span>
-                </div>
-            );
-        }
-
-        const objectID = algoliaHit.objectID;
-
-        // Now use the Recommend API to get related articles using the v5 approach
+        // Now use the Recommend API to get related articles using the postId
         const recommendResults = await recommendClient.getRecommendations({
             requests: [
                 {
                     indexName,
-                    objectID,
+                    objectID: postId, // Use postId directly for the recommendation
                     model: 'related-products',  // This is the model for related content
                     threshold: 0,  // Minimum similarity score (0-100)
                     maxRecommendations: 5
@@ -91,11 +66,11 @@ export default async function RelatedArticles({ currentSlug, title }: RelatedArt
         return (
             <div>
                 {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
-                <ArticleCarousel posts={posts} containerId={`related_${currentSlug}`} />
+                <ArticleCarousel posts={posts} containerId={`related_${postId}`} />
             </div>
         );
     } catch (error) {
-        console.error(`Error fetching related articles for slug "${currentSlug}":`, error);
+        console.error(`Error fetching related articles for postId "${postId}":`, error);
         return (
             <div>
                 {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}

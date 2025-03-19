@@ -93,7 +93,7 @@ export default async function PostPage({
           <TagPostList tag={post.seriesTag} displayMode="carousel" />
         </div>
       )}
-      <RelatedArticles currentSlug={post.slug.current} title="Related Articles" /> {/* Add the RelatedArticles component */}
+      <RelatedArticles postId={post._id} title="Related Articles" /> {/* Add the RelatedArticles component */}
     </main>
   );
 } 
