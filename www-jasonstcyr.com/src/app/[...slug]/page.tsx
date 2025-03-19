@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { isDatePath } from "../../utils/dateUtils";
 import { POST_QUERY } from '../../queries/posts'; // Correct
 import Image from "next/image"; // Import the Image component
+import TagPostList from "@/components/TagPostList";
 
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
@@ -85,6 +86,12 @@ export default async function PostPage({
       <div className="prose prose-invert prose-lg max-w-none">
         {Array.isArray(post.body) && <PortableText value={post.body} />}
       </div>
+      {post.seriesTag && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold">More From the "{post.seriesTag}" Series</h2>
+          <TagPostList tag={post.seriesTag} displayMode="carousel" />
+        </div>
+      )}
     </main>
   );
 } 
