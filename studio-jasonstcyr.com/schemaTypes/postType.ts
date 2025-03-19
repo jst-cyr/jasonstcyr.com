@@ -51,6 +51,13 @@ export const postType = defineType({
       }
     }),
     defineField({
+      name: 'seriesTag',
+      type: 'string',
+      title: 'Series Tag',
+      description: 'Enter the tag for the series this post belongs to. If it doesn\'t belong to a series, leave blank.',
+      hidden: ({document}) => !document?.tags,
+    }),
+    defineField({
       name: 'wordpressId',
       type: 'string',
       title: 'WordPress ID',
