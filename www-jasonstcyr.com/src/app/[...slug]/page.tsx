@@ -8,6 +8,7 @@ import { isDatePath } from "../../utils/dateUtils";
 import { POST_QUERY } from '../../queries/posts'; // Correct
 import Image from "next/image"; // Import the Image component
 import TagPostList from "@/components/TagPostList";
+import RelatedArticles from "@/components/RelatedArticles"; // Import the new component
 
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
@@ -92,6 +93,7 @@ export default async function PostPage({
           <TagPostList tag={post.seriesTag} displayMode="carousel" />
         </div>
       )}
+      <RelatedArticles currentSlug={post.slug.current} title="Related Articles" /> {/* Add the RelatedArticles component */}
     </main>
   );
 } 
