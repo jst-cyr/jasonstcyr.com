@@ -178,7 +178,8 @@ function cleanHtmlEntities(text: string): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#039;/g, "'")
-    .replace(/&#8217;/g, "'");
+    .replace(/&#8217;/g, "'") // Handle the right single quotation mark
+    .replace(/&#8211;/g, '–'); // Handle the em dash
 }
 
 function parseBody(body: string): PortableTextBlock[] {
