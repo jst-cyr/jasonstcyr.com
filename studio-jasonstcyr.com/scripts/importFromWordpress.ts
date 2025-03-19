@@ -240,6 +240,7 @@ function parseBody(body: string): PortableTextBlock[] {
 // Extract the series tag from the post information
 function extractSeriesTag(post: SanityPost): string | null {
   if (post.title.includes("Choose your Next.js host")) {
+    post.tags.push("Choose Your Next.js Host");
     return "Choose Your Next.js Host";
   }
   else if (post.title.includes("Dark Invasion of Lani")) {
