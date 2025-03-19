@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { createClient } from 'next-sanity';
 import axios from 'axios';
-import { getBlockContentFeatures, htmlToBlocks } from '@portabletext/block-tools';
+import { htmlToBlocks } from '@portabletext/block-tools';
 import { PortableTextBlock } from '@portabletext/types';
 import { Block } from 'typescript';
 import { ArraySchemaType } from 'sanity';
