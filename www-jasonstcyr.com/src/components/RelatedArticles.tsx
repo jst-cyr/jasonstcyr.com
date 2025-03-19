@@ -30,7 +30,7 @@ export default async function RelatedArticles({ currentSlug, title }: RelatedArt
       {
         indexName,
         params: {
-          filters: `slug:${currentSlug}`, // Adjust this filter to find related articles
+          filters: `tags:${'Lani'}`, // Adjust this filter to find related articles
           hitsPerPage: 5, // Limit the number of related articles
         },
       },
