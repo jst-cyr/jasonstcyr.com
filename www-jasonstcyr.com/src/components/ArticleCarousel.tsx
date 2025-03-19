@@ -62,7 +62,7 @@ const ArticleCarousel: React.FC<ArticleCarouselProps> = ({ posts, containerId })
       <div className="carousel rounded-box" ref={carouselRef}>
         {posts.map((post) => (
           <Link 
-            href={`${post.slug}`} 
+            href={`/${post.slug}`} 
             key={`${containerId}_${post.id}`}
             className="carousel-item relative block hover:opacity-90 transition-opacity"
           >
