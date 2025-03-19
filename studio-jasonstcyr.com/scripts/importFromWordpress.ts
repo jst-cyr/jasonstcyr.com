@@ -70,7 +70,7 @@ interface SanityPost {
 async function fetchWordPressPosts() {
   try {
     console.log('Fetching WordPress posts...');
-    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=10`);
+    const response = await axios.get(`${WORDPRESS_API_URL}/posts?per_page=11`);
     console.log(`Found ${response.data.length} posts`);
     return response.data;
   } catch (error) {
@@ -177,7 +177,8 @@ function cleanHtmlEntities(text: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'");
+    .replace(/&#039;/g, "'")
+    .replace(/&#8217;/g, "'");
 }
 
 function parseBody(body: string): PortableTextBlock[] {
