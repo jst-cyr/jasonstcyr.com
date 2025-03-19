@@ -16,7 +16,6 @@ interface AlgoliaPost {
 
 interface RelatedArticlesProps {
     postId: string; // The post ID for the current article
-    currentSlug: string; // The slug of the current article
     title?: string; // Optional title for the related articles section
 }
 
@@ -52,9 +51,9 @@ export default async function RelatedArticles({ postId, title }: RelatedArticles
             );
         }
 
-        const relatedPosts = recommendResults.results[0].hits;
+        const relatedPosts = (recommendResults.results[0] as SearchResponse<AlgoliaPost>).hits;
 
-        const posts: PostData[] = relatedPosts.map((hit: any) => ({
+        const posts: PostData[] = relatedPosts.map((hit) => ({
             id: hit.objectID,
             slug: hit.slug,
             title: hit.title,
