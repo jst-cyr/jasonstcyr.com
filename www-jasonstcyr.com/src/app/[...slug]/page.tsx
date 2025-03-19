@@ -59,11 +59,9 @@ export default async function PostPage({
         <Image
           src={postImageUrl}
           alt={post.title}
-          layout="responsive" // Use responsive layout
           width={600} // Set the width
           height={400} // Set the height
-          objectFit="cover" // Ensure the image covers the area
-          className="rounded-xl" // Add any additional classes
+          className="responsive cover rounded-xl" // Add any additional classes
         />
       )}
       </div>
