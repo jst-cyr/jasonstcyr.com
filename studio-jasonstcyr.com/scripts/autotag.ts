@@ -61,8 +61,8 @@ async function suggestTags(title: string, content: string): Promise<string[]> {
     }
 }
 
-// New function to check applicable tags
-async function checkApplicableTags(title: string, content: string, targetTags: string[]): Promise<string[]> {
+// New function to check applicable tags using OpenAI
+async function checkApplicableTags_OpenAI(title: string, content: string, targetTags: string[]): Promise<string[]> {
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o",
@@ -85,6 +85,34 @@ async function checkApplicableTags(title: string, content: string, targetTags: s
         return applicableTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     } catch (error) {
         console.error('Error checking applicable tags from OpenAI:', error);
+        return [];
+    }
+}
+
+// New function to check applicable tags using Gemini (currently a copy)
+async function checkApplicableTags_Gemini(title: string, content: string, targetTags: string[]): Promise<string[]> {
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content."
+                },
+                {
+                    role: "user",
+                    content: `Given the following article:\n\nTitle: ${title}\n\nContent: ${content}\n\nPlease analyze the content and determine which of the following tags are applicable: ${targetTags.join(', ')}. Provide only the applicable tags in a comma-separated list with no additional text or explanation.`
+                }
+            ],
+            temperature: 0.3,
+            max_tokens: 100,
+        });
+
+        // Extract applicable tags from the response
+        const applicableTags = response.choices[0]?.message.content?.trim() || '';
+        return applicableTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    } catch (error) {
+        console.error('Error checking applicable tags from Gemini:', error);
         return [];
     }
 }
@@ -119,9 +147,17 @@ async function main() {
             const textContent = extractTextFromBlocks(post.body);
             console.log('Text content:', textContent);
             
-            // Send to OpenAI for applicable tag suggestions
-            console.log('Sending to OpenAI for applicable tag suggestions...');
-            const applicableTags = await checkApplicableTags(post.title, textContent, selectedTags);
+            // Determine which LLM to use (OpenAI or Gemini)
+            const llm = "openai"; // Change this to "gemini" to use the Gemini API
+            
+            let applicableTags: string[];
+            if (llm === "openai") {
+                console.log('Sending to OpenAI for applicable tag suggestions...');
+                applicableTags = await checkApplicableTags_OpenAI(post.title, textContent, selectedTags);
+            } else {
+                console.log('Sending to Gemini for applicable tag suggestions...');
+                applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
+            }
             
             console.log(`\nApplicable tags for "${post.title}":`, applicableTags.length > 0 ? applicableTags : 'None');
         }
