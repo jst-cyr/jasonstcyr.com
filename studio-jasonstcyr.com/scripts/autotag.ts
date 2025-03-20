@@ -147,7 +147,6 @@ async function main(llm: 'openai' | 'gemini') {
             
             // Extract text content from portable text blocks
             const textContent = extractTextFromBlocks(post.body);
-            console.log('Text content:', textContent);
             
             let applicableTags: string[];
             if (llm === "openai") {
