@@ -65,41 +65,42 @@ async function main() {
     try {
         console.log('Starting auto-tagging process...');
         
-        // Fetch one post from Sanity
-        // You can modify the query to select a specific post or modify criteria
-        const query = `*[_type == "post"][0] {
+        // Fetch all posts from Sanity
+        const query = `*[_type == "post"] {
             _id,
             title,
             body,
             tags
         }`;
         
-        const post = await sanityClient.fetch(query);
+        const posts = await sanityClient.fetch(query);
         
-        if (!post) {
+        if (!posts || posts.length === 0) {
             console.log('No posts found in the Sanity dataset.');
             return;
         }
         
-        console.log(`Processing post: "${post.title}"`);
-        console.log('Existing tags:', post.tags || 'None');
-        
-        // Extract text content from portable text blocks
-        const textContent = extractTextFromBlocks(post.body);
-        
-        // Send to OpenAI for tag suggestions
-        console.log('Sending to OpenAI for tag suggestions...');
-        const suggestedTags = await suggestTags(post.title, textContent);
-        
-        console.log('\nSuggested tags from OpenAI:');
-        console.log(suggestedTags);
-        
-        // Compare with existing tags
-        if (post.tags && Array.isArray(post.tags)) {
-            const newTags = suggestedTags.filter(tag => !post.tags.includes(tag));
+        for (const post of posts) {
+            console.log(`Processing post: "${post.title}"`);
+            console.log('Existing tags:', post.tags || 'None');
             
-            console.log('\nNew tags that could be added:');
-            console.log(newTags.length > 0 ? newTags : 'No new tags to add');
+            // Extract text content from portable text blocks
+            const textContent = extractTextFromBlocks(post.body);
+            
+            // Send to OpenAI for tag suggestions
+            console.log('Sending to OpenAI for tag suggestions...');
+            const suggestedTags = await suggestTags(post.title, textContent);
+            
+            console.log('\nSuggested tags from OpenAI:');
+            console.log(suggestedTags);
+            
+            // Compare with existing tags
+            if (post.tags && Array.isArray(post.tags)) {
+                const newTags = suggestedTags.filter(tag => !post.tags.includes(tag));
+                
+                console.log('\nNew tags that could be added:');
+                console.log(newTags.length > 0 ? newTags : 'No new tags to add');
+            }
         }
         
         console.log('\nAuto-tagging process completed successfully!');
