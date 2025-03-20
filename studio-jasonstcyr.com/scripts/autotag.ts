@@ -97,13 +97,13 @@ async function checkApplicableTags_OpenAI(title: string, content: string, target
 async function checkApplicableTags_Gemini(title: string, content: string, targetTags: string[]): Promise<string[]> {
     try {
         const model = gemini.getGenerativeModel({
-            model:"gemini-1.5-flash",
+            model: "gemini-1.5-flash",
             generationConfig: {
                 temperature: 0.3,
                 maxOutputTokens: 100,
             },
             systemInstruction: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content."
-        } );
+        });
 
         const prompt = `Given the following article:\n\nTitle: ${title}\n\nContent: ${content}\n\nPlease analyze the content and determine which of the following tags are applicable: ${targetTags.join(', ')}. Provide only the applicable tags in a comma-separated list with no additional text or explanation.`;
         const result = await model.generateContent(prompt);
@@ -118,7 +118,8 @@ async function checkApplicableTags_Gemini(title: string, content: string, target
     }
 }
 
-async function main() {
+// Update the main function to accept an llm parameter
+async function main(llm: 'openai' | 'gemini') {
     try {
         console.log('Starting auto-tagging process...');
         
@@ -148,18 +149,14 @@ async function main() {
             const textContent = extractTextFromBlocks(post.body);
             console.log('Text content:', textContent);
             
-            // Determine which LLM to use (OpenAI or Gemini)
-            const llm = "gemini"; // Change this to "gemini" to use the Gemini API
-            
             let applicableTags: string[];
             if (llm === "openai") {
                 console.log('Sending to OpenAI for applicable tag suggestions...');
                 applicableTags = await checkApplicableTags_OpenAI(post.title, textContent, selectedTags);
-            } else if(llm === "gemini") {
+            } else if (llm === "gemini") {
                 console.log('Sending to Gemini for applicable tag suggestions...');
                 applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
-            }
-            else {
+            } else {
                 console.log('No LLM selected. Skipping applicable tag suggestions.');
                 applicableTags = [];
             }
@@ -173,8 +170,9 @@ async function main() {
     }
 }
 
-// Run the script
-main();
+// Run the script with the desired LLM
+const llm = "gemini"; // Change this to "openai" to use the OpenAI API
+main(llm);
 
 
 
