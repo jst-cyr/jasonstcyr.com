@@ -159,6 +159,10 @@ async function main() {
                 console.log('Sending to Gemini for applicable tag suggestions...');
                 applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
             }
+            else {
+                console.log('No LLM selected. Skipping applicable tag suggestions.');
+                applicableTags = [];
+            }
             
             console.log(`\nApplicable tags for "${post.title}":`, applicableTags.length > 0 ? applicableTags : 'None');
         }
