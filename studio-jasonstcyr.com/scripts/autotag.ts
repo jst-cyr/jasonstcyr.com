@@ -117,6 +117,7 @@ async function main() {
             
             // Extract text content from portable text blocks
             const textContent = extractTextFromBlocks(post.body);
+            console.log('Text content:', textContent);
             
             // Send to OpenAI for applicable tag suggestions
             console.log('Sending to OpenAI for applicable tag suggestions...');
