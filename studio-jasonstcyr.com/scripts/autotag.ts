@@ -155,6 +155,9 @@ async function main(llm: 'openai' | 'gemini') {
             } else if (llm === "gemini") {
                 console.log('Sending to Gemini for applicable tag suggestions...');
                 applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
+
+                //Sleep this function for 4 seconds before another request to try to avoid quota issues with the free Gemini tier
+                await new Promise(resolve => setTimeout(resolve, 4000));
             } else {
                 console.log('No LLM selected. Skipping applicable tag suggestions.');
                 applicableTags = [];
