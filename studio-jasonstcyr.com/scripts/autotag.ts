@@ -156,11 +156,28 @@ async function main(llm: 'openai' | 'gemini') {
                 console.log('Sending to Gemini for applicable tag suggestions...');
                 applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
 
-                //Sleep this function for 4 seconds before another request to try to avoid quota issues with the free Gemini tier
+                // Sleep this function for 2 seconds before another request to try to avoid quota issues with the free Gemini tier
                 await new Promise(resolve => setTimeout(resolve, 2000));
             } else {
                 console.log('No LLM selected. Skipping applicable tag suggestions.');
                 applicableTags = [];
+            }
+
+            // Combine existing tags with new applicable tags, ensuring uniqueness
+            const updatedTags = Array.from(new Set([...post.tags || [], ...applicableTags]));
+
+            // Save the updated tags back to the Sanity document
+            if (updatedTags.length > 0) {
+                console.log(`Saving updated tags for "${post.title}" to Sanity...`);
+                await sanityClient.patch(post._id) // Document ID
+                    .set({ tags: updatedTags }) // Update the tags field
+                    .commit() // Commit the changes
+                    .then(() => {
+                        console.log(`Successfully updated tags for "${post.title}".`);
+                    })
+                    .catch((error) => {
+                        console.error(`Error updating tags for "${post.title}":`, error);
+                    });
             }
 
             console.log(`\nApplicable tags for "${post.title}":`, applicableTags.length > 0 ? applicableTags : 'None');
