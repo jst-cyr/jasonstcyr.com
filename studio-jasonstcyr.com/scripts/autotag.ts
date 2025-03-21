@@ -27,7 +27,7 @@ const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 // Function to extract text content from Sanity portable text blocks
 function extractTextFromBlocks(blocks: any[]): string {
     if (!blocks || !Array.isArray(blocks)) return '';
-    
+
     return blocks.map(block => {
         // Handle different block types
         if (block._type === 'block' && block.children) {
@@ -122,7 +122,7 @@ async function checkApplicableTags_Gemini(title: string, content: string, target
 async function main(llm: 'openai' | 'gemini') {
     try {
         console.log('Starting auto-tagging process...');
-        
+
         // Fetch all posts from Sanity
         const query = `*[_type == "post"] {
             _id,
@@ -130,24 +130,24 @@ async function main(llm: 'openai' | 'gemini') {
             body,
             tags
         }`;
-        
+
         const posts = await sanityClient.fetch(query);
-        
+
         if (!posts || posts.length === 0) {
             console.log('No posts found in the Sanity dataset.');
             return;
         }
-        
+
         // Define the set of tags to check
         const selectedTags = ["fiction", "fantasy", "developer", "tutorial", "video", "event"];
-        
+
         for (const post of posts) {
             console.log(`Processing post: "${post.title}"`);
             console.log('Existing tags:', post.tags || 'None');
-            
+
             // Extract text content from portable text blocks
             const textContent = extractTextFromBlocks(post.body);
-            
+
             let applicableTags: string[];
             if (llm === "openai") {
                 console.log('Sending to OpenAI for applicable tag suggestions...');
@@ -162,10 +162,10 @@ async function main(llm: 'openai' | 'gemini') {
                 console.log('No LLM selected. Skipping applicable tag suggestions.');
                 applicableTags = [];
             }
-            
+
             console.log(`\nApplicable tags for "${post.title}":`, applicableTags.length > 0 ? applicableTags : 'None');
         }
-        
+
         console.log('\nAuto-tagging process completed successfully!');
     } catch (error) {
         console.error('Error in auto-tagging process:', error);
