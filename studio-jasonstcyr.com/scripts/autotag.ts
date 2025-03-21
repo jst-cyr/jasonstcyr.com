@@ -73,7 +73,7 @@ async function checkApplicableTags_OpenAI(title: string, content: string, target
             messages: [
                 {
                     role: "system",
-                    content: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content."
+                    content: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content. If none are applicable, return an empty array. Do not force tags that are not applicable."
                 },
                 {
                     role: "user",
@@ -102,7 +102,7 @@ async function checkApplicableTags_Gemini(title: string, content: string, target
                 temperature: 0.3,
                 maxOutputTokens: 100,
             },
-            systemInstruction: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content."
+            systemInstruction: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content. If none are applicable, return an empty array. Do not force tags that are not applicable."
         });
 
         const prompt = `Given the following article:\n\nTitle: ${title}\n\nContent: ${content}\n\nPlease analyze the content and determine which of the following tags are applicable: ${targetTags.join(', ')}. Provide only the applicable tags in a comma-separated list with no additional text or explanation.`;
