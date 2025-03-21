@@ -97,7 +97,7 @@ async function checkApplicableTags_OpenAI(title: string, content: string, target
 async function checkApplicableTags_Gemini(title: string, content: string, targetTags: string[]): Promise<string[]> {
     try {
         const model = gemini.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.0-flash-lite",
             generationConfig: {
                 temperature: 0.3,
                 maxOutputTokens: 100,
@@ -157,7 +157,7 @@ async function main(llm: 'openai' | 'gemini') {
                 applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
 
                 //Sleep this function for 4 seconds before another request to try to avoid quota issues with the free Gemini tier
-                await new Promise(resolve => setTimeout(resolve, 4000));
+                await new Promise(resolve => setTimeout(resolve, 2000));
             } else {
                 console.log('No LLM selected. Skipping applicable tag suggestions.');
                 applicableTags = [];
