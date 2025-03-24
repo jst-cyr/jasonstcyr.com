@@ -185,7 +185,40 @@ function cleanHtmlEntities(text: string): string {
 
 //Build a DOM parser with all the rules to be used in the htmlToBlocks function
 function buildDOMParser(): { parseHtml: (html: string) => Document } {
-  const domParser = { parseHtml: (html: string) => new JSDOM(html).window.document };
+  const domParser = { 
+    parseHtml: (html: string) => new JSDOM(html).window.document,
+    rules: [
+      {
+        deserialize: (el : any, next : any, block : any) => {
+          if (!el || !el.tagName || el.tagName.toLowerCase() !== 'pre') {
+            return undefined;
+          }
+          const code = el.children[0];
+          let text = '';
+          if (code) {
+            const childNodes = code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes;
+            childNodes.forEach((node : any) => {
+              text += node.textContent || '';
+            });
+          }
+          else {
+            text = el.textContent || '';
+          }
+
+          if (!text) {  
+            return undefined;
+          }
+
+          return block({
+            children: [],
+            _type: 'code',
+            code: text,
+            language: 'javascript'
+          });
+        }
+      }
+    ] 
+  };
   return domParser;
 }
 
