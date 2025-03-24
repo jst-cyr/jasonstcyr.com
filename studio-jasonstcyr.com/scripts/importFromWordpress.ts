@@ -206,7 +206,11 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
 
           // Extract highlighted lines from the class attribute
           const highlightClass = classList.find((cls: string) => cls.trim().startsWith('highlight:'));
-          const highlightedLines = highlightClass ? highlightClass.split(':')[1].trim().split(',').map(Number) : []; // Convert to array of numbers
+          const highlightedLines: number[] = highlightClass 
+            ? highlightClass.split(':')[1].trim().split(',')
+                .map((line: string) => Number(line.trim())) // Convert to numbers
+                .filter((line: number) => Number.isFinite(line)) // Filter out invalid numbers
+            : []; // Convert to array of numbers
 
           const code = el.children[0];
           let text = '';
@@ -393,7 +397,7 @@ async function importPosts() {
       }
 
       // Create the document in Sanity
-      //console.log("SKIPPING CREATION FOR NOW");
+      //console.log("SKIPPING CREATION FOR NOW"); // Uncommen if the sanityClient line is commented out for testing.
       await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
