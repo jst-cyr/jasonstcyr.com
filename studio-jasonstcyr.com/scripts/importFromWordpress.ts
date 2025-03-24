@@ -383,8 +383,8 @@ async function importPosts() {
       }
 
       // Create the document in Sanity
-      console.log("SKIPPING CREATION FOR NOW");
-      //await sanityClient.create(sanityPost);
+      //console.log("SKIPPING CREATION FOR NOW");
+      await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
