@@ -23,8 +23,8 @@ const serializers = {
   types: {
       code: (props: any) => (
           <div className='my-2'>
-              <SyntaxHighlighter language={props.node.language} showLineNumbers={true}>
-                  {props.node.code}
+              <SyntaxHighlighter language={props?.value?.language} showLineNumbers={true}>
+                  {props?.value?.code}
               </SyntaxHighlighter>
           </div>
       ),
