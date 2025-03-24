@@ -197,7 +197,12 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
           // Extract the language from the class attribute
           const classList = el.className.split(';');
           const languageClass = classList.find((cls: string) => cls.trim().startsWith('brush:'));
-          const language = languageClass ? languageClass.split(':')[1].trim() : 'text'; // Default to 'text' if not found
+          let language = languageClass ? languageClass.split(':')[1].trim() : 'text'; // Default to 'text' if not found
+
+          // Handle the special case where the language is 'jcript'
+          if(language === 'jscript') {
+            language = 'javascript';
+          }
 
           const code = el.children[0];
           let text = '';
