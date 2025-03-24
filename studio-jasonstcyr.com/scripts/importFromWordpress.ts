@@ -183,25 +183,30 @@ function cleanHtmlEntities(text: string): string {
     .replace(/&#8211;/g, '–'); // Handle the em dash
 }
 
-//Build a DOM parser with all the rules to be used in the htmlToBlocks function
+// Build a DOM parser with all the rules to be used in the htmlToBlocks function
 function buildDOMParser(): { parseHtml: (html: string) => Document } {
   const domParser = { 
     parseHtml: (html: string) => new JSDOM(html).window.document,
     rules: [
       {
-        deserialize: (el : any, next : any, block : any) => {
+        deserialize: (el: any, next: any, block: any) => {
           if (!el || !el.tagName || el.tagName.toLowerCase() !== 'pre') {
             return undefined;
           }
+
+          // Extract the language from the class attribute
+          const classList = el.className.split(';');
+          const languageClass = classList.find((cls: string) => cls.trim().startsWith('brush:'));
+          const language = languageClass ? languageClass.split(':')[1].trim() : 'text'; // Default to 'text' if not found
+
           const code = el.children[0];
           let text = '';
           if (code) {
             const childNodes = code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes;
-            childNodes.forEach((node : any) => {
+            childNodes.forEach((node: any) => {
               text += node.textContent || '';
             });
-          }
-          else {
+          } else {
             text = el.textContent || '';
           }
 
@@ -213,7 +218,7 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
             children: [],
             _type: 'code',
             code: text,
-            language: 'javascript'
+            language: language,
           });
         }
       }
@@ -378,8 +383,8 @@ async function importPosts() {
       }
 
       // Create the document in Sanity
-      //console.log("SKIPPING CREATION FOR NOW");
-      await sanityClient.create(sanityPost);
+      console.log("SKIPPING CREATION FOR NOW");
+      //await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
