@@ -1,4 +1,5 @@
 import { PortableText, type SanityDocument } from "next-sanity";
+import SyntaxHighlighter from "react-syntax-highlighter";
 import imageUrlBuilder from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { client } from "@/sanity/client";
@@ -17,6 +18,18 @@ const urlFor = (source: SanityImageSource) =>
     : null;
 
 const options = { next: { revalidate: 30 } };
+
+const serializers = {
+  types: {
+      code: (props: any) => (
+          <div className='my-2'>
+              <SyntaxHighlighter language={props.node.language} showLineNumbers={true}>
+                  {props.node.code}
+              </SyntaxHighlighter>
+          </div>
+      ),
+  },
+}
 
 export default async function PostPage({
   params,
@@ -85,7 +98,7 @@ export default async function PostPage({
         </div>
       </div>
       <div className="prose prose-invert prose-lg max-w-none">
-        {Array.isArray(post.body) && <PortableText value={post.body} />}
+        {Array.isArray(post.body) && <PortableText value={post.body} components={serializers} />}
       </div>
       {post.seriesTag && (
         <div className="mt-8">

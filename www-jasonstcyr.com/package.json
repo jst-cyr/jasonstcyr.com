@@ -13,6 +13,7 @@
     "@sanity/image-url": "^1.1.0",
     "@sanity/webhook": "^4.0.4",
     "@tailwindcss/cli": "^4.0.14",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "algoliasearch": "^5.21.0",
     "instantsearch.css": "^8.5.1",
     "next": "15.2.2",
