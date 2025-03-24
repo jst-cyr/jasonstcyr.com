@@ -17,6 +17,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "@portabletext/block-tools": "^1.1.13",
+    "@sanity/code-input": "^5.1.2",
     "@sanity/vision": "^3.79.0",
     "axios": "^1.8.3",
     "dotenv": "^16.4.7",
