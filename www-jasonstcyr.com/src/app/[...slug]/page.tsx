@@ -30,6 +30,13 @@ const serializers = {
                 showLineNumbers={true}
                 showInlineLineNumbers={true}
                 style={ isDarkMode ? stackoverflowDark : stackoverflowLight}
+                wrapLines={true}
+                lineProps={(lineNumber: number) => {
+                  return { 
+                    className: props?.value?.highlightedLines?.includes(lineNumber) ? 'highlighted-line' : '',
+                    style: { display: 'block' }
+                  };
+                }}
                 >
                   {props?.value?.code}
               </SyntaxHighlighter>

@@ -26,3 +26,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.highlighted-line {
+  background-color: rgba(255, 255, 255, 0.1); /* For dark theme */
+}
+
+[data-theme="light"] .highlighted-line {
+  background-color: rgba(0, 0, 0, 0.1); /* For light theme */
+}
