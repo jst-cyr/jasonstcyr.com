@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "A Sanity Studio for St-Cyr Thoughts and Writings",
 };
 
-export const currentTheme = "dark";
+const currentTheme : string = "dark";
 
 export default function RootLayout({
   children,

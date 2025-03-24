@@ -11,13 +11,14 @@ import { POST_QUERY } from '../../queries/posts'; // Correct
 import Image from "next/image"; // Import the Image component
 import TagPostList from "@/components/TagPostList";
 import RelatedArticles from "@/components/RelatedArticles"; // Import the new component
-import { currentTheme } from "@/app/layout";
+
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
   projectId && dataset
     ? imageUrlBuilder({ projectId, dataset }).image(source)
     : null;
-    
+
+const currentTheme = "dark"; // TODO: Get this from the layout or a config or user setting
 const isDarkMode = currentTheme === 'dark'; // Check for dark mode
 const options = { next: { revalidate: 30 } };
 
