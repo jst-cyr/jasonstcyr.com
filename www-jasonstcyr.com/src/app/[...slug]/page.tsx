@@ -22,9 +22,17 @@ const currentTheme = "dark"; // TODO: Get this from the layout or a config or us
 const isDarkMode = currentTheme === 'dark'; // Check for dark mode
 const options = { next: { revalidate: 30 } };
 
+interface CodeBlockProps {
+  value: {
+    language: string;
+    code: string;
+    highlightedLines: number[]; // Array of line numbers to highlight
+  };
+}
+
 const serializers = {
   types: {
-      code: (props: any) => (
+      code: (props: CodeBlockProps) => (
           <div className='my-2'>
               <SyntaxHighlighter 
                 language={props?.value?.language} 
