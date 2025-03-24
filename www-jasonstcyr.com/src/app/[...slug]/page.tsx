@@ -1,5 +1,6 @@
 import { PortableText, type SanityDocument } from "next-sanity";
 import SyntaxHighlighter from "react-syntax-highlighter";
+import { stackoverflowDark, stackoverflowLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import imageUrlBuilder from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { client } from "@/sanity/client";
@@ -10,13 +11,14 @@ import { POST_QUERY } from '../../queries/posts'; // Correct
 import Image from "next/image"; // Import the Image component
 import TagPostList from "@/components/TagPostList";
 import RelatedArticles from "@/components/RelatedArticles"; // Import the new component
-
+import { currentTheme } from "@/app/layout";
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
   projectId && dataset
     ? imageUrlBuilder({ projectId, dataset }).image(source)
     : null;
-
+    
+const isDarkMode = currentTheme === 'dark'; // Check for dark mode
 const options = { next: { revalidate: 30 } };
 
 const serializers = {
@@ -27,6 +29,7 @@ const serializers = {
                 language={props?.value?.language} 
                 showLineNumbers={true}
                 showInlineLineNumbers={true}
+                style={ isDarkMode ? stackoverflowDark : stackoverflowLight}
                 >
                   {props?.value?.code}
               </SyntaxHighlighter>

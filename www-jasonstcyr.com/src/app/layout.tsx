@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "A Sanity Studio for St-Cyr Thoughts and Writings",
 };
 
+export const currentTheme = "dark";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,8 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
-        data-theme="dark"
+        className={`${geistSans.variable} ${geistMono.variable} antialiased ${currentTheme}`}
+        data-theme={currentTheme}
       >
         {children}
       </body>
