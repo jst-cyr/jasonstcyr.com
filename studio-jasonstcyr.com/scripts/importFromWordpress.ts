@@ -183,6 +183,12 @@ function cleanHtmlEntities(text: string): string {
     .replace(/&#8211;/g, '–'); // Handle the em dash
 }
 
+//Build a DOM parser with all the rules to be used in the htmlToBlocks function
+function buildDOMParser(): { parseHtml: (html: string) => Document } {
+  const domParser = { parseHtml: (html: string) => new JSDOM(html).window.document };
+  return domParser;
+}
+
 function parseBody(body: string): PortableTextBlock[] {
   //Remove any related articles carousels before continuing
   const tempDom = new JSDOM(body);
@@ -231,7 +237,7 @@ function parseBody(body: string): PortableTextBlock[] {
     throw new Error('Block content type not found');
   }
 
-  const domParser = { parseHtml: (html: string) => new JSDOM(html).window.document };
+  const domParser = buildDOMParser();
   const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser ) as PortableTextBlock[];
 
   return blocks;
