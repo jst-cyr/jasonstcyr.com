@@ -200,9 +200,13 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
           let language = languageClass ? languageClass.split(':')[1].trim() : 'text'; // Default to 'text' if not found
 
           // Handle the special case where the language is 'jcript'
-          if(language === 'jscript') {
+          if (language === 'jscript') {
             language = 'javascript';
           }
+
+          // Extract highlighted lines from the class attribute
+          const highlightClass = classList.find((cls: string) => cls.trim().startsWith('highlight:'));
+          const highlightedLines = highlightClass ? highlightClass.split(':')[1].trim().split(',').map(Number) : []; // Convert to array of numbers
 
           const code = el.children[0];
           let text = '';
@@ -224,6 +228,7 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
             _type: 'code',
             code: text,
             language: language,
+            highlightedLines: highlightedLines,
           });
         }
       }
