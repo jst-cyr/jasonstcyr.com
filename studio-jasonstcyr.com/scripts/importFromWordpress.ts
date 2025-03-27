@@ -183,58 +183,60 @@ function cleanHtmlEntities(text: string): string {
     .replace(/&#8211;/g, '–'); // Handle the em dash
 }
 
+function deserializeCodeBlock(el: any, next: any, block: any) {
+  if (!el || !el.tagName || el.tagName.toLowerCase() !== 'pre') {
+    return undefined;
+  }
+
+  // Extract the language from the class attribute
+  const classList = el.className.split(';');
+  const languageClass = classList.find((cls: string) => cls.trim().startsWith('brush:'));
+  let language = languageClass ? languageClass.split(':')[1].trim() : 'text'; // Default to 'text' if not found
+
+  // Handle the special case where the language is 'jcript'
+  if (language === 'jscript') {
+    language = 'javascript';
+  }
+
+  // Extract highlighted lines from the class attribute
+  const highlightClass = classList.find((cls: string) => cls.trim().startsWith('highlight:'));
+  const highlightedLines: number[] = highlightClass 
+    ? highlightClass.split(':')[1].trim().split(',')
+        .map((line: string) => Number(line.trim())) // Convert to numbers
+        .filter((line: number) => Number.isFinite(line)) // Filter out invalid numbers
+    : []; // Convert to array of numbers
+
+  const code = el.children[0];
+  let text = '';
+  if (code) {
+    const childNodes = code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes;
+    childNodes.forEach((node: any) => {
+      text += node.textContent || '';
+    });
+  } else {
+    text = el.textContent || '';
+  }
+
+  if (!text) {  
+    return undefined;
+  }
+
+  return block({
+    children: [],
+    _type: 'code',
+    code: text,
+    language: language,
+    highlightedLines: highlightedLines,
+  });
+}
+
 // Build a DOM parser with all the rules to be used in the htmlToBlocks function
 function buildDOMParser(): { parseHtml: (html: string) => Document } {
   const domParser = { 
     parseHtml: (html: string) => new JSDOM(html).window.document,
     rules: [
       {
-        deserialize: (el: any, next: any, block: any) => {
-          if (!el || !el.tagName || el.tagName.toLowerCase() !== 'pre') {
-            return undefined;
-          }
-
-          // Extract the language from the class attribute
-          const classList = el.className.split(';');
-          const languageClass = classList.find((cls: string) => cls.trim().startsWith('brush:'));
-          let language = languageClass ? languageClass.split(':')[1].trim() : 'text'; // Default to 'text' if not found
-
-          // Handle the special case where the language is 'jcript'
-          if (language === 'jscript') {
-            language = 'javascript';
-          }
-
-          // Extract highlighted lines from the class attribute
-          const highlightClass = classList.find((cls: string) => cls.trim().startsWith('highlight:'));
-          const highlightedLines: number[] = highlightClass 
-            ? highlightClass.split(':')[1].trim().split(',')
-                .map((line: string) => Number(line.trim())) // Convert to numbers
-                .filter((line: number) => Number.isFinite(line)) // Filter out invalid numbers
-            : []; // Convert to array of numbers
-
-          const code = el.children[0];
-          let text = '';
-          if (code) {
-            const childNodes = code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes;
-            childNodes.forEach((node: any) => {
-              text += node.textContent || '';
-            });
-          } else {
-            text = el.textContent || '';
-          }
-
-          if (!text) {  
-            return undefined;
-          }
-
-          return block({
-            children: [],
-            _type: 'code',
-            code: text,
-            language: language,
-            highlightedLines: highlightedLines,
-          });
-        }
+        deserialize: deserializeCodeBlock // Call the code block deserialization function
       }
     ] 
   };
