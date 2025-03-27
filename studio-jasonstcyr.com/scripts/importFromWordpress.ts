@@ -230,13 +230,37 @@ function deserializeCodeBlock(el: any, next: any, block: any) {
   });
 }
 
+function deserializeImage(el: any, next: any, block: any) {
+  if (!el || !el.tagName || el.tagName.toLowerCase() !== 'img') {
+    return undefined;
+  }
+
+  //Get the image source
+  const imageSrc = el.getAttribute('data-orig-file');
+  const altText = el.getAttribute('alt'); 
+  
+  if(!imageSrc){
+    return undefined;
+  }
+
+  console.log("Found image source: ", imageSrc);
+  return undefined;
+  /*return block({
+    _type: 'image',
+    _sanityAsset: imageSrc,
+  });*/
+}
+
 // Build a DOM parser with all the rules to be used in the htmlToBlocks function
 function buildDOMParser(): { parseHtml: (html: string) => Document } {
   const domParser = { 
     parseHtml: (html: string) => new JSDOM(html).window.document,
     rules: [
       {
-        deserialize: deserializeCodeBlock // Call the code block deserialization function
+        deserialize: deserializeCodeBlock
+      },
+      {
+        deserialize: deserializeImage
       }
     ] 
   };
