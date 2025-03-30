@@ -268,8 +268,13 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
   return domParser;
 }
 
-function parseBody(body: string): PortableTextBlock[] {
-  //Remove any related articles carousels before continuing
+// Type guard to check if a block is an image block
+function isImageBlock(block: PortableTextBlock): block is PortableTextBlock & { _type: 'image'; src: string; alt: string } {
+  return block._type === 'image' && typeof (block as any).src === 'string' && typeof (block as any).alt === 'string';
+}
+
+async function parseBody(body: string): Promise<PortableTextBlock[]> {
+  // Remove any related articles carousels before continuing
   const tempDom = new JSDOM(body);
   const document = tempDom.window.document;
   //console.log("BODY before carousel removal: ", body);
@@ -318,29 +323,27 @@ function parseBody(body: string): PortableTextBlock[] {
   const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser) as PortableTextBlock[];
 
   // Collect image data for later upload
-  const imagesToUpload: SanityImage[] = [];
+  const imagesToUpload: { src: string; alt: string }[] = [];
 
   blocks.forEach(block => {
-    if (block._type === 'image') {
-      console.log("Found an image to upload: ", block)
-      /*imagesToUpload.push({
-        _type: 'image',
-        asset: {
-          _type: 'reference',
-          _ref: block.src, // Use the src returned from deserializeImage
-        },
+    if (isImageBlock(block)) { // Use the type guard
+      console.log("Found an image to upload: ", block);
+      imagesToUpload.push({
+        src: block.src,
         alt: block.alt,
-      });*/
+      });
     }
   });
 
   // Upload images after deserialization
-  imagesToUpload.forEach(async (image) => {
-    const uploadedImage = await uploadImageToSanity(image.asset._ref, image.alt);
+  const uploadPromises = imagesToUpload.map(async (image) => {
+    const uploadedImage = await uploadImageToSanity(image.src, image.alt);
     if (uploadedImage) {
-      console.log("Uploaded image: ", uploadedImage.asset._ref)
+      console.log("Uploaded image: ", uploadedImage.asset._ref);
     }
   });
+
+  await Promise.all(uploadPromises); // Wait for all uploads to complete
 
   return blocks;
 }
@@ -413,7 +416,7 @@ async function importPosts() {
       console.log('Categories:', postCategories);
 
       // Parse the body
-      const blocks = parseBody(post.content.rendered);
+      const blocks = await parseBody(post.content.rendered);
 
       // Handle featured image
       let image: SanityImage | undefined;
@@ -447,8 +450,8 @@ async function importPosts() {
       }
 
       // Create the document in Sanity
-      //console.log("SKIPPING CREATION FOR NOW"); // Uncommen if the sanityClient line is commented out for testing.
-      await sanityClient.create(sanityPost);
+      console.log("SKIPPING CREATION FOR NOW"); // Uncommen if the sanityClient line is commented out for testing.
+      //await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
