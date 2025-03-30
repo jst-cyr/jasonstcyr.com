@@ -323,12 +323,13 @@ async function parseBody(body: string): Promise<PortableTextBlock[]> {
   const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser) as PortableTextBlock[];
 
   // Collect image data for later upload
-  const imagesToUpload: { src: string; alt: string }[] = [];
+  const imagesToUpload: { block: PortableTextBlock; src: string; alt: string }[] = [];
 
   blocks.forEach(block => {
     if (isImageBlock(block)) { // Use the type guard
       console.log("Found an image to upload: ", block);
       imagesToUpload.push({
+        block,
         src: block.src,
         alt: block.alt,
       });
@@ -336,16 +337,28 @@ async function parseBody(body: string): Promise<PortableTextBlock[]> {
   });
 
   // Upload images after deserialization
-  const uploadPromises = imagesToUpload.map(async (image) => {
-    const uploadedImage = await uploadImageToSanity(image.src, image.alt);
+  const uploadPromises = imagesToUpload.map(async ({ block, src, alt }) => {
+    const uploadedImage = await uploadImageToSanity(src, alt);
     if (uploadedImage) {
       console.log("Uploaded image: ", uploadedImage.asset._ref);
+      // Update the block to reference the uploaded image
+      return {
+        ...block,
+        _type: 'image',
+        asset: {
+          _type: 'reference',
+          _ref: uploadedImage.asset._ref,
+        },
+        alt: uploadedImage.alt,
+      };
     }
+    return block; // Return the original block if upload fails
   });
 
-  await Promise.all(uploadPromises); // Wait for all uploads to complete
+  // Wait for all uploads to complete and get the updated blocks
+  const updatedBlocks = await Promise.all(uploadPromises);
 
-  return blocks;
+  return updatedBlocks; // Return the updated blocks
 }
 
 // Extract the series tag from the post information
@@ -450,8 +463,8 @@ async function importPosts() {
       }
 
       // Create the document in Sanity
-      console.log("SKIPPING CREATION FOR NOW"); // Uncommen if the sanityClient line is commented out for testing.
-      //await sanityClient.create(sanityPost);
+      //console.log("SKIPPING CREATION FOR NOW"); // Uncommen if the sanityClient line is commented out for testing.
+      await sanityClient.create(sanityPost);
       
       // Log the prepared Sanity post data
       console.log('\nPrepared Sanity post data:');
