@@ -50,6 +50,7 @@ interface SanityImage {
     _type: 'reference';
     _ref: string;
   };
+  alt: string;
 }
 
 interface SanityPost {
@@ -148,7 +149,7 @@ function extractFullSlugFromLink(link: string): string {
   }
 }
 
-async function uploadImageToSanity(imageUrl: string): Promise<SanityImage | null> {
+async function uploadImageToSanity(imageUrl: string, altText: string): Promise<SanityImage | null> {
   try {
     // Download the image
     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
@@ -163,6 +164,7 @@ async function uploadImageToSanity(imageUrl: string): Promise<SanityImage | null
         _type: 'reference',
         _ref: asset._id,
       },
+      alt: altText
     };
   } catch (error) {
     console.error('Error uploading image to Sanity:', error);
@@ -235,20 +237,19 @@ function deserializeImage(el: any, next: any, block: any) {
     return undefined;
   }
 
-  //Get the image source
+  // Get the image source
   const imageSrc = el.getAttribute('data-orig-file');
-  const altText = el.getAttribute('alt'); 
-  
-  if(!imageSrc){
-    return undefined;
+  const altText = el.getAttribute('alt') || '';
+
+  if (!imageSrc) {
+    return undefined; // Return undefined if no source is found
   }
 
-  console.log("Found image source: ", imageSrc);
-  return undefined;
-  /*return block({
+  return block({
     _type: 'image',
-    _sanityAsset: imageSrc,
-  });*/
+    src: imageSrc,
+    alt: altText,
+  });
 }
 
 // Build a DOM parser with all the rules to be used in the htmlToBlocks function
@@ -291,32 +292,55 @@ function parseBody(body: string): PortableTextBlock[] {
     }
   }
 
-  // Get the cleaned HTML
   const cleanedBody = document.body.innerHTML;
 
-  const postSchema = Schema.compile(
-    {
-      name: 'myBlogPost',
-      types: [{
-        type: 'object',
-        name: 'post',
-        fields: [
-          {
-            name: 'body',
-            type: 'array',
-            of: [{ type: 'block' }],
-          },
-        ],
-      }],
-    }
-  );
+  const postSchema = Schema.compile({
+    name: 'myBlogPost',
+    types: [{
+      type: 'object',
+      name: 'post',
+      fields: [
+        {
+          name: 'body',
+          type: 'array',
+          of: [{ type: 'block' }],
+        },
+      ],
+    }],
+  });
+
   const blockContentType = postSchema.get('post').fields.find((field: any) => field.name === 'body')?.type as ArraySchemaType<Block>;
   if (!blockContentType) {
     throw new Error('Block content type not found');
   }
 
   const domParser = buildDOMParser();
-  const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser ) as PortableTextBlock[];
+  const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser) as PortableTextBlock[];
+
+  // Collect image data for later upload
+  const imagesToUpload: SanityImage[] = [];
+
+  blocks.forEach(block => {
+    if (block._type === 'image') {
+      console.log("Found an image to upload: ", block)
+      /*imagesToUpload.push({
+        _type: 'image',
+        asset: {
+          _type: 'reference',
+          _ref: block.src, // Use the src returned from deserializeImage
+        },
+        alt: block.alt,
+      });*/
+    }
+  });
+
+  // Upload images after deserialization
+  imagesToUpload.forEach(async (image) => {
+    const uploadedImage = await uploadImageToSanity(image.asset._ref, image.alt);
+    if (uploadedImage) {
+      console.log("Uploaded image: ", uploadedImage.asset._ref)
+    }
+  });
 
   return blocks;
 }
@@ -395,7 +419,7 @@ async function importPosts() {
       let image: SanityImage | undefined;
       if (post.jetpack_featured_media_url) {
         console.log(`Processing featured image: ${post.jetpack_featured_media_url}`);
-        const uploadedImage = await uploadImageToSanity(post.jetpack_featured_media_url);
+        const uploadedImage = await uploadImageToSanity(post.jetpack_featured_media_url, post.excerpt);
         if (uploadedImage) {
           image = uploadedImage;
         }
