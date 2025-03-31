@@ -17,9 +17,9 @@ const CustomImage: React.FC<ImageBlockProps> = ({ value }) => {
     <Image
       src={imageUrl}
       alt={value.alt}
-      width={600} // Set appropriate width
-      height={400} // Set appropriate height
-      className="responsive cover rounded-xl" // Add any additional classes
+      width={600} 
+      height={400}
+      className="responsive cover rounded-xl"
     />
   );
 };
