@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { urlFor } from "@/utils/urlUtils"; // Import the urlFor function
 
 interface ImageBlockProps {
