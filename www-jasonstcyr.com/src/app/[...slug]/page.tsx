@@ -2,7 +2,6 @@ import { PortableText, type SanityDocument } from "next-sanity";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { stackoverflowDark, stackoverflowLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { urlFor } from "@/utils/urlUtils"; // Import the urlFor function from utils
-import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { client } from "@/sanity/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,8 +11,6 @@ import Image from "next/image"; // Import the Image component
 import TagPostList from "@/components/TagPostList";
 import RelatedArticles from "@/components/RelatedArticles"; // Component to display articles related to the current article
 import ImageBlock from "@/components/ImageBlock"; // Component for displaying images inside portable text blocks
-
-const { projectId, dataset } = client.config();
 
 const currentTheme = "dark"; // TODO: Get this from the layout or a config or user setting
 const isDarkMode = currentTheme === 'dark'; // Check for dark mode
