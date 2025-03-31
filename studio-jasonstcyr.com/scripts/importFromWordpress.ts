@@ -245,10 +245,14 @@ function deserializeImage(el: any, next: any, block: any) {
     return undefined; // Return undefined if no source is found
   }
 
+  // Return the block in the correct schema for a Sanity image
   return block({
-    _type: 'image',
-    src: imageSrc,
-    alt: altText,
+    _type: 'image', // Ensure the type is set to 'image'
+    asset: {
+      _type: 'reference', // Set the asset type to reference
+      _ref: imageSrc, // Use the image source as a reference (this should be updated later when uploaded)
+    },
+    alt: altText, // Set the alt text
   });
 }
 
@@ -269,8 +273,12 @@ function buildDOMParser(): { parseHtml: (html: string) => Document } {
 }
 
 // Type guard to check if a block is an image block
-function isImageBlock(block: PortableTextBlock): block is PortableTextBlock & { _type: 'image'; src: string; alt: string } {
-  return block._type === 'image' && typeof (block as any).src === 'string' && typeof (block as any).alt === 'string';
+function isImageBlock(block: PortableTextBlock): block is PortableTextBlock & { _type: 'image'; asset: { _type: 'reference'; _ref: string }; alt: string } {
+  return block._type === 'image' && 
+         (block as any).asset && // Use 'as any' to bypass TypeScript checks for this property
+         (block as any).asset._type === 'reference' && 
+         typeof (block as any).asset._ref === 'string' && 
+         typeof (block as any).alt === 'string';
 }
 
 async function parseBody(body: string): Promise<PortableTextBlock[]> {
@@ -322,43 +330,22 @@ async function parseBody(body: string): Promise<PortableTextBlock[]> {
   const domParser = buildDOMParser();
   const blocks = htmlToBlocks(cleanedBody, blockContentType, domParser) as PortableTextBlock[];
 
-  // Collect image data for later upload
-  const imagesToUpload: { block: PortableTextBlock; src: string; alt: string }[] = [];
+  // Process each block and upload images if necessary
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
 
-  blocks.forEach(block => {
     if (isImageBlock(block)) { // Use the type guard
       console.log("Found an image to upload: ", block);
-      imagesToUpload.push({
-        block,
-        src: block.src,
-        alt: block.alt,
-      });
+      const uploadedImage = await uploadImageToSanity(block.asset._ref, block.alt);
+      if (uploadedImage) {
+        console.log("Uploaded image: ", uploadedImage.asset._ref);
+        // Update the block to reference the uploaded image
+        block.asset = uploadedImage.asset;
+      }
     }
-  });
+  }
 
-  // Upload images after deserialization
-  const uploadPromises = imagesToUpload.map(async ({ block, src, alt }) => {
-    const uploadedImage = await uploadImageToSanity(src, alt);
-    if (uploadedImage) {
-      console.log("Uploaded image: ", uploadedImage.asset._ref);
-      // Update the block to reference the uploaded image
-      return {
-        ...block,
-        _type: 'image',
-        asset: {
-          _type: 'reference',
-          _ref: uploadedImage.asset._ref,
-        },
-        alt: uploadedImage.alt,
-      };
-    }
-    return block; // Return the original block if upload fails
-  });
-
-  // Wait for all uploads to complete and get the updated blocks
-  const updatedBlocks = await Promise.all(uploadPromises);
-
-  return updatedBlocks; // Return the updated blocks
+  return blocks; // Return the updated blocks
 }
 
 // Extract the series tag from the post information
