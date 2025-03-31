@@ -238,7 +238,7 @@ function deserializeImage(el: any, next: any, block: any) {
   }
 
   // Get the image source
-  const imageSrc = el.getAttribute('data-orig-file');
+  const imageSrc = el.getAttribute('data-orig-file') || el.getAttribute('src');
   const altText = el.getAttribute('alt') || '';
 
   if (!imageSrc) {
@@ -285,7 +285,6 @@ async function parseBody(body: string): Promise<PortableTextBlock[]> {
   // Remove any related articles carousels before continuing
   const tempDom = new JSDOM(body);
   const document = tempDom.window.document;
-  //console.log("BODY before carousel removal: ", body);
 
   // Find and remove the carousel
   const carousels = document.getElementsByClassName('wp-block-newspack-blocks-carousel');
