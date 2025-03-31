@@ -1,7 +1,7 @@
 import { PortableText, type SanityDocument } from "next-sanity";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { stackoverflowDark, stackoverflowLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import imageUrlBuilder from "@sanity/image-url";
+import { urlFor } from "@/utils/urlUtils"; // Import the urlFor function from utils
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { client } from "@/sanity/client";
 import Link from "next/link";
@@ -10,13 +10,10 @@ import { isDatePath } from "../../utils/dateUtils";
 import { POST_QUERY } from '../../queries/posts'; // Correct
 import Image from "next/image"; // Import the Image component
 import TagPostList from "@/components/TagPostList";
-import RelatedArticles from "@/components/RelatedArticles"; // Import the new component
+import RelatedArticles from "@/components/RelatedArticles"; // Component to display articles related to the current article
+import ImageBlock from "@/components/ImageBlock"; // Component for displaying images inside portable text blocks
 
 const { projectId, dataset } = client.config();
-const urlFor = (source: SanityImageSource) =>
-  projectId && dataset
-    ? imageUrlBuilder({ projectId, dataset }).image(source)
-    : null;
 
 const currentTheme = "dark"; // TODO: Get this from the layout or a config or user setting
 const isDarkMode = currentTheme === 'dark'; // Check for dark mode
@@ -32,25 +29,26 @@ interface CodeBlockProps {
 
 const serializers = {
   types: {
-      code: (props: CodeBlockProps) => (
-          <div className='my-2'>
-              <SyntaxHighlighter 
-                language={props?.value?.language} 
-                showLineNumbers={true}
-                showInlineLineNumbers={true}
-                style={ isDarkMode ? stackoverflowDark : stackoverflowLight}
-                wrapLines={true}
-                lineProps={(lineNumber: number) => {
-                  return { 
-                    className: props?.value?.highlightedLines?.includes(lineNumber) ? 'highlighted-line' : '',
-                    style: { display: 'block' }
-                  };
-                }}
-                >
-                  {props?.value?.code}
-              </SyntaxHighlighter>
-          </div>
-      ),
+    code: (props: CodeBlockProps) => (
+      <div className='my-2'>
+        <SyntaxHighlighter 
+          language={props?.value?.language} 
+          showLineNumbers={true}
+          showInlineLineNumbers={true}
+          style={ isDarkMode ? stackoverflowDark : stackoverflowLight}
+          wrapLines={true}
+          lineProps={(lineNumber: number) => {
+            return { 
+              className: props?.value?.highlightedLines?.includes(lineNumber) ? 'highlighted-line' : '',
+              style: { display: 'block' }
+            };
+          }}
+        >
+          {props?.value?.code}
+        </SyntaxHighlighter>
+      </div>
+    ),
+    image: ImageBlock,
   },
 }
 
@@ -80,7 +78,7 @@ export default async function PostPage({
   }
 
   const postImageUrl = post.image
-    ? urlFor(post.image)?.url()
+    ? urlFor(post.image)?.url() // Use the new urlFor function
     : null;
 
   return (
