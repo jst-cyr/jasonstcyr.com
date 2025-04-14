@@ -23,6 +23,25 @@ const openai = new OpenAI({
 
 // Gemini client configuration
 const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model20lite = "gemini-2.0-flash-lite";
+const model20flash = "gemini-2.0-flash";
+const model15pro = "gemini-1.5-pro";
+const model15flash = "gemini-1.5-flash";
+const modelUnavailable = "model-unavailable";
+let selectedModel = model20lite;
+
+function getNextModelId(model: string): string {
+    switch (model) {
+        case model20lite:
+            return model20flash;
+        case model20flash:
+            return model15flash;
+        case model15flash:
+            return model15pro;
+        default:
+            return modelUnavailable;
+    }
+}
 
 // Function to extract text content from Sanity portable text blocks
 function extractTextFromBlocks(blocks: any[]): string {
@@ -94,10 +113,15 @@ async function checkApplicableTags_OpenAI(title: string, content: string, target
 }
 
 // New function to check applicable tags using Gemini
-async function checkApplicableTags_Gemini(title: string, content: string, targetTags: string[]): Promise<string[]> {
+async function checkApplicableTags_Gemini(title: string | null, content: string | null, targetTags: string[], modelId: string): Promise<string[]> {
+    if (modelId === modelUnavailable) {
+        console.error('No more models available. Cannot tag product.');
+        throw new Error('No more models available');
+    }
+
     try {
         const model = gemini.getGenerativeModel({
-            model: "gemini-2.0-flash-lite",
+            model: modelId,
             generationConfig: {
                 temperature: 0.3,
                 maxOutputTokens: 100,
@@ -105,7 +129,10 @@ async function checkApplicableTags_Gemini(title: string, content: string, target
             systemInstruction: "You are a helpful AI assistant that specializes in content analysis. Your task is to determine which of the specified tags are applicable to the provided article content. If none are applicable, return an empty array. Do not force tags that are not applicable."
         });
 
-        const prompt = `Given the following article:\n\nTitle: ${title}\n\nContent: ${content}\n\nPlease analyze the content and determine which of the following tags are applicable: ${targetTags.join(', ')}. Provide only the applicable tags in a comma-separated list with no additional text or explanation.`;
+        // Use a default value for title if it is null
+        const safeTitle = title || "Untitled Article"; // Default value
+
+        const prompt = `Given the following article:\n\nTitle: ${safeTitle}\n\nContent: ${content}\n\nPlease analyze the content and determine which of the following tags are applicable: ${targetTags.join(', ')}. Provide only the applicable tags in a comma-separated list with no additional text or explanation.`;
         const result = await model.generateContent(prompt);
 
         // Extract applicable tags from the response
@@ -113,6 +140,28 @@ async function checkApplicableTags_Gemini(title: string, content: string, target
 
         return applicableTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     } catch (error) {
+        // If we're above the daily quota for this model, try another model
+        if (error instanceof Error && error.message.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier')) {
+            const nextModelId = getNextModelId(modelId);
+            selectedModel = nextModelId;
+            console.log(`Quota exceeded for model ${modelId}. Switching to model ${nextModelId}...`);
+            return await checkApplicableTags_Gemini(title, content, targetTags, nextModelId);
+        }
+        // If we're going above the rate limit for this model, sleep for 2 seconds and try again
+        if (error instanceof Error && error.message.includes('GenerateRequestsPerMinutePerProjectPerModel-FreeTier')) {
+            console.log('Rate limit exceeded for current model. Sleeping for 2 seconds and trying again...');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return await checkApplicableTags_Gemini(title, content, targetTags, modelId);
+        }
+        // If the model is unavailable, try another model
+        if (error instanceof Error && error.message.includes('404')) {
+            const nextModelId = getNextModelId(modelId);
+            selectedModel = nextModelId;
+            console.log(`Model ${modelId} is unavailable. Switching to model ${nextModelId}...`);
+            return await checkApplicableTags_Gemini(title, content, targetTags, nextModelId);
+        }
+
+
         console.error('Error checking applicable tags from Gemini:', error);
         return [];
     }
@@ -154,7 +203,7 @@ async function main(llm: 'openai' | 'gemini') {
                 applicableTags = await checkApplicableTags_OpenAI(post.title, textContent, selectedTags);
             } else if (llm === "gemini") {
                 console.log('Sending to Gemini for applicable tag suggestions...');
-                applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags);
+                applicableTags = await checkApplicableTags_Gemini(post.title, textContent, selectedTags, selectedModel);
 
                 // Sleep this function for 2 seconds before another request to try to avoid quota issues with the free Gemini tier
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -185,6 +234,10 @@ async function main(llm: 'openai' | 'gemini') {
 
         console.log('\nAuto-tagging process completed successfully!');
     } catch (error) {
+        if (error instanceof Error && error.message === 'No more models available') {
+            console.log('Stopping processing due to model unavailability.');
+            return; // Stop processing further products
+        }
         console.error('Error in auto-tagging process:', error);
     }
 }
