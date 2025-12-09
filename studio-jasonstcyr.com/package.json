@@ -18,7 +18,7 @@
     "@google/generative-ai": "^0.24.0",
     "@portabletext/block-tools": "^1.1.13",
     "@sanity/code-input": "^5.1.2",
-    "@sanity/vision": "^3.79.0",
+    "@sanity/vision": "^4.20.3",
     "axios": "^1.8.3",
     "dotenv": "^16.4.7",
     "jsdom": "^26.0.0",
@@ -26,7 +26,7 @@
     "openai": "^4.88.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "^3.79.0",
+    "sanity": "^4.20.3",
     "sanity-plugin-media": "^3.0.2",
     "styled-components": "^6.1.8",
     "ts-node": "^10.9.2"
