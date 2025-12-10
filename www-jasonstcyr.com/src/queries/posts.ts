@@ -1,4 +1,4 @@
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import type { SanityImageSource } from "@sanity/image-url";
 import { PortableTextBlock, SanityDocument } from "next-sanity";
 
 export const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
